@@ -38,11 +38,11 @@ Further documentation and Zenodo data archiving is in preparation.
 
 Example call to generate the v2 model in 50r1 using a full year of training data (note that CUDA reproducibility settings were not used, and hence the exact model cannot be replicated):
 
-'''bash
+```bash
 python3 seaice_training.py --data=[top level directory containing training data] --output=[directory for netcdf output files] --batchsize=1024 --tag=[identifier for this training run] --nepochs=25 --nsteps=365
-'''
+```
 
-'''
+```
 options:
   -h, --help            show this help message and exit
   --data DATA           Directory containing the training data.
@@ -60,7 +60,7 @@ options:
   --diagsonly           Compute output diagnostics from an already-trained model.
   --trainonly           Only train the model (needed for large datasets to avoid OOM GPU errors).
   --reproducible        Reproducible training; 3-5x slower.
-'''
+```
 
 ### Dependency versions
 
