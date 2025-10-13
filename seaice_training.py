@@ -9,7 +9,6 @@
 
 """ Top level control of the sea ice network parameter estimation using Keras and tensorflow """
 
-#Test
 import xarray as xr
 import numpy as np
 import tensorflow as tf

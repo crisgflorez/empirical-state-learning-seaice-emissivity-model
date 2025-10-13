@@ -1,0 +1,40 @@
+[ECMWF-INFO -ecprofile] /usr/bin/bash NON_INTERACTIVE on ab6-126 at 20251008_141315.480, PID: 2296513, JOBID: 24576182
+[ECMWF-INFO -ecprofile] $SCRATCH=/ec/res4/scratch/dnk8355
+[ECMWF-INFO -ecprofile] $PERM=/perm/dnk8355
+[ECMWF-INFO -ecprofile] $HPCPERM=/ec/res4/hpcperm/dnk8355
+[ECMWF-INFO -ecprofile] $TMPDIR=/etc/ecmwf/ssd/ssd1/tmpdirs/dnk8355.24576182
+[ECMWF-INFO -ecprofile] $SCRATCHDIR=/ec/res4/scratchdir/dnk8355/6/24576182
+2025-10-08 14:13:17.380096: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-10-08 14:13:17.709065: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory
+2025-10-08 14:13:17.709115: I tensorflow/compiler/xla/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2025-10-08 14:13:18.792840: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory
+2025-10-08 14:13:18.793187: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory
+2025-10-08 14:13:18.793196: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] This is the ECMWF job Epilogue
+[ECMWF-INFO -ecepilog] +++ Please report issues using the Support portal +++
+[ECMWF-INFO -ecepilog] +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] Run at 2025-10-08T14:13:21 on ab
+[ECMWF-INFO -ecepilog] JobName                   : seaice_finalV2
+[ECMWF-INFO -ecepilog] JobID                     : 24576182
+[ECMWF-INFO -ecepilog] Submit                    : 2025-10-08T14:12:55
+[ECMWF-INFO -ecepilog] Start                     : 2025-10-08T14:13:12
+[ECMWF-INFO -ecepilog] End                       : 2025-10-08T14:13:21
+[ECMWF-INFO -ecepilog] QueuedTime                : 17.0
+[ECMWF-INFO -ecepilog] ElapsedRaw                : 9
+[ECMWF-INFO -ecepilog] ExitCode                  : 0:0
+[ECMWF-INFO -ecepilog] DerivedExitCode           : 0:0
+[ECMWF-INFO -ecepilog] State                     : COMPLETED
+[ECMWF-INFO -ecepilog] Account                   : dkhirlam
+[ECMWF-INFO -ecepilog] QOS                       : nf
+[ECMWF-INFO -ecepilog] User                      : dnk8355
+[ECMWF-INFO -ecepilog] StdOut                    : /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_24576182.out
+[ECMWF-INFO -ecepilog] StdErr                    : /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_24576182.err
+[ECMWF-INFO -ecepilog] NNodes                    : 1
+[ECMWF-INFO -ecepilog] NCPUS                     : 2
+[ECMWF-INFO -ecepilog] SBU                       : 0.043
+[ECMWF-INFO -ecepilog] jobtag                    : dnk8355-seaice_finalV2-1x2-/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2__JOBID_.out
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+

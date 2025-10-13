@@ -18,7 +18,7 @@ class SeaiceSensors():
 
     # Name unifies and identifies basic channel properties (approx. frequency, polarisaton)
     all_channel_names = np.array(['1v','1h','6v','6h','7v','7h','10v','10h','19v','19h',
-      '24v','24h','37v','37h','89v','89h','166v','166h',
+      '24v','24h','37v','37h','','','89v','89h','166v','166h',
       '183pm7v','183pm7h','183pm3v','183pm3h','183pm1v','183pm1h'])
 
     # Frequency, GHz, of most standard channels
@@ -111,3 +111,4 @@ class SeaiceSensors():
           'channel': ['10v','10h','19v','19h','24v','37v','37h','89v','89h','166v','166h','183pm3v','183pm7v'],
           'background_bias': [0.0,0.0],
           'background_bias_error': 0.001}
+        
