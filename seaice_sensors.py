@@ -18,16 +18,16 @@ class SeaiceSensors():
 
     # Name unifies and identifies basic channel properties (approx. frequency, polarisaton)
     all_channel_names = np.array(['1v','1h','6v','6h','7v','7h','10v','10h','19v','19h',
-      '24v','24h','37v','37h','','','89v','89h','166v','166h',
+      '24v','24h','37v','37h','50v','50h','53v','53h','89v','89h','166v','166h',
       '183pm7v','183pm7h','183pm3v','183pm3h','183pm1v','183pm1h'])
 
     # Frequency, GHz, of most standard channels
     all_channel_frequencies = np.array([1.4135, 1.4135, 6.925, 6.925, 7.3, 7.3, 10.65, 10.65, 
-      18.7, 18.7, 23.8, 23.8, 36.5, 36.5, 89.0, 89.0, 166.5, 166.5, 
+      18.7, 18.7, 23.8, 23.8, 36.5, 36.5, 50.3, 50.3, 52.8, 52.8, 89.0, 89.0, 166.5, 166.5, 
       183.31, 183.31, 183.31, 183.31, 183.31, 183.31], dtype=np.float32)
 
     all_channel_obs_error = np.array([2.5, 4.0, 2.5, 4.0, 2.5, 4.0, 2.5, 4.0, 2.5, 4.5, 
-      2.5, 5.0, 4.0, 7.0, 4.5, 10.0, 12.0, 12.0, 12.0, 8.0, 8.0, 4.0, 4.0, 2.0], dtype=np.float32)
+      2.5, 5.0, 4.0, 7.0, 8.5, 8.5, 8, 8, 4.5, 10.0, 12.0, 12.0, 12.0, 8.0, 8.0, 4.0, 4.0, 2.0], dtype=np.float32)
 
     def __init__(self, sensors):
 
@@ -109,6 +109,41 @@ class SeaiceSensors():
         # GMI, noting that input files were unwittingly created with a different ordering of 183 GHz channels
         self.all_sensors['gmi'] = {
           'channel': ['10v','10h','19v','19h','24v','37v','37h','89v','89h','166v','166h','183pm3v','183pm7v'],
+          'background_bias': [0.0,0.0],
+          'background_bias_error': 0.001}
+        
+        # amsu-a onboard METOP-B
+        self.all_sensors['METOP-B'] = {
+          'channel': ['24v','37v','50v','53v'],
+          'frequency': [23.8, 31.4, 50.3, 52.8],
+          'background_bias': [0.0,0.0],
+          'background_bias_error': 0.001}
+        
+        # amsu-a onboard METOP-C
+        self.all_sensors['METOP-C'] = {
+          'channel': ['24v','37v','50v','53v','89v'],
+          'frequency': [23.8, 31.4, 50.3, 52.8, 89],
+          'background_bias': [0.0,0.0],
+          'background_bias_error': 0.001}
+        
+        # amsu-a onboard NOAA15
+        self.all_sensors['NOAA-15'] = {
+          'channel': ['24v','37v','50v','53v','89v'],
+          'frequency': [23.8, 31.4, 50.3, 52.8, 89],
+          'background_bias': [0.0,0.0],
+          'background_bias_error': 0.001}
+
+        # amsu-a onboard NOAA18
+        self.all_sensors['NOAA-18'] = {
+          'channel': ['24v','37v','50v','53v','89v'],
+          'frequency': [23.8, 31.4, 50.3, 52.8, 89],
+          'background_bias': [0.0,0.0],
+          'background_bias_error': 0.001}
+        
+        # amsu-a onboard NOAA19
+        self.all_sensors['NOAA-19'] = {
+          'channel': ['24v','37v','50v','53v','89v'],
+          'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
           'background_bias_error': 0.001}
         
