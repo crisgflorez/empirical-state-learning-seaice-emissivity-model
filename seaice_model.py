@@ -60,7 +60,7 @@ class SeaiceModel:
         self.grid = grid
      
         # TF model training is much faster if the inputs are a single tensor
-        self.inputs_float = tf.keras.Input(shape=(nfields_float+nchannels*7,))
+        self.inputs_float = tf.keras.Input(shape=(nfields_float+nchannels*7,)) #7 is the number of channel-dependent input fields other than OBSVALUE
         self.inputs_int   = tf.keras.Input(shape=(nfields_int,),dtype="int32")
         self.inputs       = [self.inputs_float, self.inputs_int]
                 
@@ -72,6 +72,8 @@ class SeaiceModel:
         cloud_fraction = self.inputs_float[:,5]
         iobs = self.inputs_int[:,0]
         isensor = tf.cast(self.inputs_float[:,6],tf.int32)
+        scanpos = tf.cast(self.inputs_float[:,7],tf.int32)
+        zenith = tf.cast(self.inputs_float[:,8],tf.int32)
 
         emis_ocean = self.inputs_float[:,nfields_float:nfields_float+nchannels]
         tausfc_clear = self.inputs_float[:,nfields_float+nchannels:nfields_float+2*nchannels]
@@ -286,7 +288,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     Load training data for the sea ice network
     """
 
-    fields_1d = ['JULIAN_DAY','IGRID','TSFC','WINDSPEED10M','CLOUD_FRACTION']
+    fields_1d = ['JULIAN_DAY','IGRID','TSFC','WINDSPEED10M','CLOUD_FRACTION','SCANPOS','ZENITH']
     fields_chan = ['OBSVALUE','EMIS_WATER','TAUSFC','TDOWN','TUP','TAUSFC_CLD','TDOWN_CLD','TUP_CLD']  
 
     nstep_all = []
@@ -349,7 +351,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     nstep = np.max(nstep_all)
     nobs_total = sum(nobs_all)
     nchannels=len(channel_basis)
-    nfields_float = 7
+    nfields_float = 9 #7
     nfields_int = 1
     ndata = nfields_float +(len(fields_chan) - 1)*nchannels
 
@@ -364,15 +366,16 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     lat = np.zeros((nobs_total),np.float32)
     julian_day = np.zeros((nobs_total),np.float64)
 
-    grid = xr.open_dataset(icedir+'grid.nc')
-    grid_lon=grid.LON.values
-    grid_lat=grid.LAT.values
+    grid = xr.open_dataset("/perm/dnk8355/odb_files_test/METOP-B_1april2024_31march2025_lat_lon_corrected_ref_above50_without_land.nc")
+    #grid = xr.open_dataset(icedir+'grid.nc')
+    grid_lon=grid.lon.values
+    grid_lat=grid.lat.values
     grid.close()
 
     noff = 0
     isensor=0
     for sensor, nobs, istep, channel_map in zip(sensors, nobs_all, istep_all, channel_maps):
-        filebase = icedir+sensor+'/'+sensor+'_'
+        filebase = icedir+sensor+ '_' #'/'+sensor+'_'
 
         print("Loading",sensor)
 
@@ -391,6 +394,8 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
         x0[noff:noff+nobs,5] = obs["CLOUD_FRACTION"].CLOUD_FRACTION[ibegin:ilast]
         x0_int[noff:noff+nobs,0] = noff+np.arange(nobs)
         x0[noff:noff+nobs,6] = isensor+np.zeros(nobs)
+        x0[noff:noff+nobs,7] = obs['SCANPOS'].SCANPOS[ibegin:ilast]
+        x0[noff:noff+nobs,8] = obs['ZENITH'].ZENITH[ibegin:ilast]
         isensor += 1
 
         lon[noff:noff+nobs] = grid_lon[obs["IGRID"].IGRID[ibegin:ilast]]
@@ -427,7 +432,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     tbout = np.copy(y0[:,:,0])
     tbout[np.where(y0[:,:,0] == 0)] = np.nan
     da['tb'] = xr.DataArray(data=tbout,dims=("iobs","channel"),coords={"iobs":x0_int[:,0],"channel":channel_basis})
-    append_geolocation_in_obs_space(geolocation, da)
+    append_geolocation_in_obs_space(geolocation, da, julian_day_attrs)
     da['igrid'] = xr.DataArray(data=x0[:,1].astype(np.int32),dims=("iobs"))
     da['istep'] = xr.DataArray(data=x0[:,2].astype(np.int32),dims=("iobs"))
     da['isensor'] = xr.DataArray(data=x0[:,6].astype(np.int32),dims=("iobs"))
@@ -448,11 +453,12 @@ def save_model_outputs(model_tb_list, geolocation, fname, channel_names, varname
 
     da = xr.Dataset()
     da[varname] = xr.DataArray(data=tbout,dims=("iobs","channel"),coords={"iobs":iobs,"channel":channel})
-    append_geolocation_in_obs_space(geolocation, da)
+    julian_day_attrs = {'units':'days since -4714-11-24 12:00:00.000','calendar':'proleptic_gregorian'}
+    append_geolocation_in_obs_space(geolocation, da, julian_day_attrs)
     da['channel_name'] = xr.DataArray(channel_names,dims=("channel"))
     da.to_netcdf(fname)
 
-def append_geolocation_in_obs_space(geolocation, dataset):
+def append_geolocation_in_obs_space(geolocation, dataset,julian_day_attrs):
     dataset['lon'] = xr.DataArray(data=geolocation['lon'],dims=("iobs"))
     dataset['lat'] = xr.DataArray(data=geolocation['lat'],dims=("iobs"))
     dataset['julian_day'] = xr.DataArray(data=geolocation['julian_day'],dims=("iobs"),attrs=julian_day_attrs)

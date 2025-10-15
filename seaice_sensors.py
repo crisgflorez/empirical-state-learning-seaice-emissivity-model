@@ -27,7 +27,7 @@ class SeaiceSensors():
       183.31, 183.31, 183.31, 183.31, 183.31, 183.31], dtype=np.float32)
 
     all_channel_obs_error = np.array([2.5, 4.0, 2.5, 4.0, 2.5, 4.0, 2.5, 4.0, 2.5, 4.5, 
-      2.5, 5.0, 4.0, 7.0, 8.5, 8.5, 8, 8, 4.5, 10.0, 12.0, 12.0, 12.0, 8.0, 8.0, 4.0, 4.0, 2.0], dtype=np.float32)
+      2.5, 5.0, 4.0, 7.0, 5, 5, 2, 2, 4.5, 10.0, 12.0, 12.0, 12.0, 8.0, 8.0, 4.0, 4.0, 2.0], dtype=np.float32)
 
     def __init__(self, sensors):
 
@@ -85,7 +85,24 @@ class SeaiceSensors():
         self.background_bias = np.transpose(self.background_bias)
         
         self.obs_error = self.all_channel_obs_error[iUsedChannels]
- 
+
+        # --- Overwrite obs_error for specific AMSU-A sensors if present ---
+        amsua_sensors = ['METOP-B', 'METOP-C', 'NOAA-15', 'NOAA-18', 'NOAA-19']
+
+        for key in self.sensors:
+            if key in amsua_sensors and 'obs_error' in self.all_sensors[key]:
+                sensor_channels = self.all_sensors[key]['channel']
+                sensor_errors   = self.all_sensors[key]['obs_error']
+
+                # It loops through the channels of this sensor, and if the channel is in the unified list,
+                # it updates the corresponding observation error.
+                for ch_name, ch_err in zip(sensor_channels, sensor_errors):
+                    if ch_name in self.channel_names:
+                        idx = np.where(self.channel_names == ch_name)[0][0]
+                        self.obs_error[idx] = ch_err
+
+        print("Final unified obs_error:", self.obs_error)
+
         self.channel_basis = np.arange(np.max(np.concatenate(self.channel_maps))+1)
         
     def init_sensors(self):
@@ -117,33 +134,38 @@ class SeaiceSensors():
           'channel': ['24v','37v','50v','53v'],
           'frequency': [23.8, 31.4, 50.3, 52.8],
           'background_bias': [0.0,0.0],
-          'background_bias_error': 0.001}
+          'background_bias_error': 1,
+          'obs_error': [4.5, 5, 5, 2]}
         
         # amsu-a onboard METOP-C
         self.all_sensors['METOP-C'] = {
           'channel': ['24v','37v','50v','53v','89v'],
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
-          'background_bias_error': 0.001}
+          'background_bias_error': 1,
+          'obs_error': [4.5, 5, 5, 2, 4.5]}
         
         # amsu-a onboard NOAA15
         self.all_sensors['NOAA-15'] = {
           'channel': ['24v','37v','50v','53v','89v'],
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
-          'background_bias_error': 0.001}
+          'background_bias_error': 1,
+          'obs_error': [4.5, 5, 5, 2, 4.5]}
 
         # amsu-a onboard NOAA18
         self.all_sensors['NOAA-18'] = {
           'channel': ['24v','37v','50v','53v','89v'],
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
-          'background_bias_error': 0.001}
+          'background_bias_error': 1,
+          'obs_error': [4.5, 5, 5, 2, 4.5]}
         
         # amsu-a onboard NOAA19
         self.all_sensors['NOAA-19'] = {
           'channel': ['24v','37v','50v','53v','89v'],
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
-          'background_bias_error': 0.001}
+          'background_bias_error': 1,
+          'obs_error': [4.5, 5, 5, 2, 4.5]}
         
