@@ -57,6 +57,8 @@ class SeaiceSensors():
         self.polarisation_maps = []
         self.background_bias = []
         self.background_bias_error = []
+        self.zswath_width = []
+        self.zfov_spacing = []
 
         print('Unified channel basis:', self.channel_names)
            
@@ -79,6 +81,10 @@ class SeaiceSensors():
             self.background_bias.append(self.all_sensors[key]['background_bias'])
  
             self.background_bias_error.append(self.all_sensors[key]['background_bias_error'])
+
+            self.zswath_width.append(self.all_sensors[key]['zswath_width'])
+
+            self.zfov_spacing.append(self.all_sensors[key]['zfov_spacing'])
                         
         self.frequency_maps = np.stack(self.frequency_maps)
         self.polarisation_maps = np.stack(self.polarisation_maps)
@@ -86,21 +92,25 @@ class SeaiceSensors():
         
         self.obs_error = self.all_channel_obs_error[iUsedChannels]
 
-        # --- Overwrite obs_error for specific AMSU-A sensors if present ---
+        # --- Adjust obs_error for AMSU-A family sensors if present ---
         amsua_sensors = ['METOP-B', 'METOP-C', 'NOAA-15', 'NOAA-18', 'NOAA-19']
 
-        for key in self.sensors:
-            if key in amsua_sensors and 'obs_error' in self.all_sensors[key]:
-                sensor_channels = self.all_sensors[key]['channel']
-                sensor_errors   = self.all_sensors[key]['obs_error']
+        # Obs errors for AMSU-A channels 
+        amsua_obs_errors = {
+            '24v': 4.5,
+            '37v': 5.0,
+            '50v': 5.0,
+            '53v': 2.0,
+            '89v': 4.5
+        }
 
-                # It loops through the channels of this sensor, and if the channel is in the unified list,
-                # it updates the corresponding observation error.
-                for ch_name, ch_err in zip(sensor_channels, sensor_errors):
-                    if ch_name in self.channel_names:
-                        idx = np.where(self.channel_names == ch_name)[0][0]
-                        self.obs_error[idx] = ch_err
-
+        # If any of the specified sensors are in the amsua list, update the obs_error accordingly
+        if any(s in self.sensors for s in amsua_sensors):
+            for ch_name, new_err in amsua_obs_errors.items():
+                # Only update if the channel is in the unified channel list
+                if ch_name in self.channel_names:
+                    idx = np.where(self.channel_names == ch_name)[0][0]
+                    self.obs_error[idx] = new_err
         print("Final unified obs_error:", self.obs_error)
 
         self.channel_basis = np.arange(np.max(np.concatenate(self.channel_maps))+1)
@@ -109,25 +119,33 @@ class SeaiceSensors():
         self.all_sensors['smap_allsky'] = {
           'channel': ['1v','1h'],
           'background_bias': [0.0,0.0],
-          'background_bias_error': 2.0}
+          'background_bias_error': 2.0,
+          'zswath_width':np.nan,
+          'zfov_spacing':np.nan}
 
         self.all_sensors['amsr2'] = {
           'channel': ['10v','10h','19v','19h','24v','24h','37v','37h','89v','89h'],
           'background_bias': [5.0,2.5],
-          'background_bias_error': 0.5}
+          'background_bias_error': 0.5,
+          'zswath_width':75,
+          'zfov_spacing':0.620}
 
         # SSMIS needs to over-ride the default frequencies, being an older non-standard sensor
         self.all_sensors['ssmisf17'] = {
           'channel': ['19v','19h','24v','37v','37h','89v','89h','166h','183pm7h','183pm3h','183pm1h'],
           'frequency': [19.35, 19.35, 22.235, 37.0, 37.0, 91.655, 91.655, 150.0, 183.31, 183.31, 183.31],
           'background_bias': [0.0,0.0],
-          'background_bias_error': 4.0}
+          'background_bias_error': 4.0,
+          'zswath_width':72,
+          'zfov_spacing':2.441}
 
         # GMI, noting that input files were unwittingly created with a different ordering of 183 GHz channels
         self.all_sensors['gmi'] = {
           'channel': ['10v','10h','19v','19h','24v','37v','37h','89v','89h','166v','166h','183pm3v','183pm7v'],
           'background_bias': [0.0,0.0],
-          'background_bias_error': 0.001}
+          'background_bias_error': 0.001,
+          'zswath_width':70,
+          'zfov_spacing':0.633}
         
         # amsu-a onboard METOP-B
         self.all_sensors['METOP-B'] = {
@@ -135,7 +153,8 @@ class SeaiceSensors():
           'frequency': [23.8, 31.4, 50.3, 52.8],
           'background_bias': [0.0,0.0],
           'background_bias_error': 1,
-          'obs_error': [4.5, 5, 5, 2]}
+          'zswath_width':48.333333,
+          'zfov_spacing': 3.333333}
         
         # amsu-a onboard METOP-C
         self.all_sensors['METOP-C'] = {
@@ -143,7 +162,8 @@ class SeaiceSensors():
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
           'background_bias_error': 1,
-          'obs_error': [4.5, 5, 5, 2, 4.5]}
+          'zswath_width':48.333333,
+          'zfov_spacing': 3.333333}
         
         # amsu-a onboard NOAA15
         self.all_sensors['NOAA-15'] = {
@@ -151,7 +171,8 @@ class SeaiceSensors():
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
           'background_bias_error': 1,
-          'obs_error': [4.5, 5, 5, 2, 4.5]}
+          'zswath_width':48.333333,
+          'zfov_spacing': 3.333333}
 
         # amsu-a onboard NOAA18
         self.all_sensors['NOAA-18'] = {
@@ -159,7 +180,9 @@ class SeaiceSensors():
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
           'background_bias_error': 1,
-          'obs_error': [4.5, 5, 5, 2, 4.5]}
+          'obs_error': [4.5, 5, 5, 2, 4.5],
+          'zswath_width':48.333333,
+          'zfov_spacing': 3.333333}
         
         # amsu-a onboard NOAA19
         self.all_sensors['NOAA-19'] = {
@@ -167,5 +190,7 @@ class SeaiceSensors():
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
           'background_bias_error': 1,
-          'obs_error': [4.5, 5, 5, 2, 4.5]}
+          'obs_error': [4.5, 5, 5, 2, 4.5],
+          'zswath_width':48.333333,
+          'zfov_spacing': 3.333333}
         
