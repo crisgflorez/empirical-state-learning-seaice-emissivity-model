@@ -13,6 +13,7 @@ import tensorflow as tf
 import numpy as np
 import xarray as xr
 import seaice_layers
+import os
 
 julian_day_attrs = {'units':'days since -4714-11-24 12:00:00.000','calendar':'proleptic_gregorian'}
 
@@ -23,7 +24,7 @@ class SeaiceModel:
     def __init__(self, nchannels=18, nprop_grid=2, nprop_obs=1, ngrid=1, nstep=1, nobs=1, nlag=0, alpha=[1.0],
                  bg_error_seaice=0.002, bg_error_false_sic=0.02, bg_error_emis=1e-5, background_emis=0.8, seaice_use_loss=False,
                  seaice_use_pdf_loss=True, seaice_use_tsfc_loss=True, penalise_false_sic=True, emis_use_bounds_loss=True,
-                 loss_channel_emis=0, background_bias=None, bg_error_bias=None,
+                 loss_channel_emis=0, zswath_width=None,zfov_spacing=None,background_bias=None, bg_error_bias=None,
                  width_nn=7, grid=None, nfields_float=7, nfields_int=1, nsensors=3, emissivity_mapping=None):
         """
         Initialize the network structure and internal and external dimensions
@@ -54,6 +55,8 @@ class SeaiceModel:
         self.setup['background_emis'] = background_emis
         self.setup['loss_channel_emis'] = loss_channel_emis
 
+        self.setup['zswath_width'] = zswath_width
+        self.setup['zfov_spacing'] = zfov_spacing
         self.setup['bg_error_bias']   = bg_error_bias
         self.setup['background_bias'] = background_bias
 
@@ -72,8 +75,8 @@ class SeaiceModel:
         cloud_fraction = self.inputs_float[:,5]
         iobs = self.inputs_int[:,0]
         isensor = tf.cast(self.inputs_float[:,6],tf.int32)
-        scanpos = tf.cast(self.inputs_float[:,7],tf.int32)
-        zenith = tf.cast(self.inputs_float[:,8],tf.int32)
+        scanpos = self.inputs_float[:,7] #This is not int32 to allow for NaN values in scanpos
+        zenith = self.inputs_float[:,8]
 
         emis_ocean = self.inputs_float[:,nfields_float:nfields_float+nchannels]
         tausfc_clear = self.inputs_float[:,nfields_float+nchannels:nfields_float+2*nchannels]
@@ -115,7 +118,7 @@ class SeaiceModel:
         ice_prop_grid = self.ice_prop_layer_grid(geolocation)
         ice_prop_obs  = self.ice_prop_layer_obs(iobs)
         ice_prop = tf.concat([ice_prop_grid,ice_prop_obs],1)
-        self.emis_seaice = self.seaice_emis_layer(tsfc_norm, ice_prop, isensor)
+        self.emis_seaice = self.seaice_emis_layer(tsfc_norm, ice_prop, isensor, scanpos, zswath_width, zfov_spacing)
         emis_ocean_bc = self.ocean_emis_layer(windspeed, emis_ocean)
         seaice_fraction = self.seaice_layer(geolocation, tsfc)
         surface_emitted, emis_mixed = self.surface_terms_layer(seaice_fraction, emis_ocean_bc, self.emis_seaice, tsfc)
@@ -288,7 +291,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     Load training data for the sea ice network
     """
 
-    fields_1d = ['JULIAN_DAY','IGRID','TSFC','WINDSPEED10M','CLOUD_FRACTION','SCANPOS','ZENITH']
+    fields_1d = ['JULIAN_DAY','','TSFC','WINDSPEED10M','CLOUD_FRACTION','SCANPOS','ZENITH']
     fields_chan = ['OBSVALUE','EMIS_WATER','TAUSFC','TDOWN','TUP','TAUSFC_CLD','TDOWN_CLD','TUP_CLD']  
 
     nstep_all = []
@@ -300,9 +303,17 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
   
     # Build common basis to combine instruments
     for sensor in sensors:
-        filebase = icedir+sensor+'/'+sensor+'_'
+        filebase = icedir+sensor+'_' #'/'+sensor+'_'
 
         print("Indexing",sensor)
+        if sensor!='METOP-B':
+            IGRID='INITIAL_IGRID'
+            fields_1d[1] = IGRID
+  
+        else:
+            IGRID='IGRID'
+            fields_1d[1] = IGRID
+
 
         julian_day = xr.open_dataset(filebase+fields_1d[0]+'.nc')
         istep = np.floor(nsteps_per_day*(julian_day.JULIAN_DAY.data - np.floor(julian_day.JULIAN_DAY.data.min()) - 0.375))
@@ -331,7 +342,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
         print("    Number of obs:",nobs)
 
         igrid = xr.open_dataset(filebase+fields_1d[1]+'.nc')
-        ngrid = igrid.IGRID.data.max() + 1
+        ngrid = igrid[IGRID].data.max() + 1
         igrid.close()
         
         ngrid_all.append(ngrid)
@@ -382,28 +393,57 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
         ibegin = np.count_nonzero(istep < 0)
         ilast  = np.count_nonzero(istep < nstep)
 
+        if sensor!='METOP-B':
+            IGRID='INITIAL_IGRID'
+            fields_1d[1] = IGRID
+  
+        else:
+            IGRID='IGRID'
+            fields_1d[1] = IGRID
+
+
         obs = {}
         for field_name in fields_1d: 
-            obs[field_name] = xr.open_dataset(filebase+field_name+'.nc')
+            file_path = filebase + field_name + '.nc'
+            if os.path.exists(file_path):
+                obs[field_name] = xr.open_dataset(file_path)
+            else:
+                obs[field_name] = None  
+
 
         x0[noff:noff+nobs,0] = np.maximum(273.0 - obs["TSFC"].TSFC[ibegin:ilast],0.0)/30.0
-        x0[noff:noff+nobs,1] = obs["IGRID"].IGRID[ibegin:ilast]
+        x0[noff:noff+nobs,1] = obs[IGRID][IGRID][ibegin:ilast]
         x0[noff:noff+nobs,2] = istep[ibegin:ilast]
         x0[noff:noff+nobs,3] = obs["TSFC"].TSFC[ibegin:ilast]
         x0[noff:noff+nobs,4] = obs["WINDSPEED10M"].WINDSPEED10M[ibegin:ilast]
         x0[noff:noff+nobs,5] = obs["CLOUD_FRACTION"].CLOUD_FRACTION[ibegin:ilast]
         x0_int[noff:noff+nobs,0] = noff+np.arange(nobs)
         x0[noff:noff+nobs,6] = isensor+np.zeros(nobs)
-        x0[noff:noff+nobs,7] = obs['SCANPOS'].SCANPOS[ibegin:ilast]
-        x0[noff:noff+nobs,8] = obs['ZENITH'].ZENITH[ibegin:ilast]
+
+        # SCANPOS
+        if obs['SCANPOS'] is not None:
+            x0[noff:noff+nobs,7] = obs['SCANPOS'].SCANPOS[ibegin:ilast]
+        else:
+            x0[noff:noff+nobs,7] = np.nan
+            print(f"Warning: SCANPOS file missing for {sensor}, filled with nans.")
+
+        # ZENITH
+        if obs['ZENITH'] is not None:
+            x0[noff:noff+nobs,8] = obs['ZENITH'].ZENITH[ibegin:ilast]
+        else:
+            x0[noff:noff+nobs,8] = np.nan
+            print(f"Warning: ZENITH file missing for {sensor}, filled with nans.")
+
         isensor += 1
 
-        lon[noff:noff+nobs] = grid_lon[obs["IGRID"].IGRID[ibegin:ilast]]
-        lat[noff:noff+nobs] = grid_lat[obs["IGRID"].IGRID[ibegin:ilast]]
+        if sensor=='METOP-B':
+            lon[noff:noff+nobs] = grid_lon[obs[IGRID][IGRID][ibegin:ilast]]
+            lat[noff:noff+nobs] = grid_lat[obs[IGRID][IGRID][ibegin:ilast]]
         julian_day[noff:noff+nobs] = obs["JULIAN_DAY"].JULIAN_DAY[ibegin:ilast]
         
         for dataset in obs.values():
-            dataset.close()
+            if dataset is not None:
+                dataset.close()
 
         doff = nfields_float
         for field in fields_chan[1:]:

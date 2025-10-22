@@ -31,20 +31,40 @@ def predict_loop(model, distributor, nsplit, batchsize):
             model_tb.append(tbout)
     return model_tb
 
-parser = argparse.ArgumentParser('Sea ice training v2')
-parser.add_argument('--data', help='Directory containing the training data.', type=str)
-parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+')
-parser.add_argument('--output', help='Directory to store the output data.', type=str)
-parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str)
-parser.add_argument('--modeltag', help='If not training, optionally use an existing model with a different tag name.', type=str, default=None)
-parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
-parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)
-parser.add_argument('--nsteps',    help='Number of time steps (usually days) in the model (default all)', type=int, default=-1)
-parser.add_argument('--nepochs',   help='Number of training epochs (default 8)', type=int, default=8)
-parser.add_argument('--diagsonly', help='Compute output diagnostics from an already-trained model.',action='store_true')
-parser.add_argument('--trainonly', help='Only train the model (needed for large datasets to avoid OOM GPU errors).',action='store_true')
-parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.',action='store_true')
-args = parser.parse_args()
+def get_args():
+    parser = argparse.ArgumentParser('Sea ice training v2')
+    parser.add_argument('--data', help='Directory containing the training data.', type=str)
+    parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+')
+    parser.add_argument('--output', help='Directory to store the output data.', type=str)
+    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str)
+    parser.add_argument('--modeltag', help='If not training, optionally use an existing model with a different tag name.', type=str, default=None)
+    parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
+    parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)
+    parser.add_argument('--nsteps', help='Number of time steps (usually days) in the model (default all)', type=int, default=-1)
+    parser.add_argument('--nepochs', help='Number of training epochs (default 8)', type=int, default=8)
+    parser.add_argument('--diagsonly', help='Compute output diagnostics from an already-trained model.', action='store_true')
+    parser.add_argument('--trainonly', help='Only train the model (needed for large datasets to avoid OOM GPU errors).', action='store_true')
+    parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true')
+
+    # Detect if running inside VSCode/Jupyter (extra kernel args in sys.argv)
+    if any('--f=' in a or 'ipykernel' in a for a in sys.argv):
+        print(" Detected VSCode/Jupyter interactive mode — using default debug arguments.")
+        args = parser.parse_args([
+            '--data', '/perm/dnk8355/netcdf_1april2024_31march2025/',
+            '--sensors', 'METOP-B', 'METOP-C',
+            '--output', '/perm/dnk8355/outputs_training_finalv2',
+            '--tag', '_1april2024_31march2025'
+        ])
+    else:
+        # Normal case: use real CLI arguments and ignore unknown ones if any
+        args, unknown = parser.parse_known_args()
+        if unknown:
+            print(" Ignoring unknown arguments:", unknown)
+    
+    return args
+
+ 
+args = get_args()
 
 # This is the top level directory location for all input and output data
 ice_path=args.data+'/'
@@ -81,10 +101,10 @@ nsensors = len(sensor_info.sensors)
 
 sm.seaice_layers.obs_error = sensor_info.obs_error
 
-loss_channel_emis = np.where(sensor_info.channel_names == '10v')
-if loss_channel_emis[0].size != 1:
-    print("Error: there must be a channel 10v to constrain the surface emissivity estimate", file=sys.stderr)
-    sys.exit(1)
+#loss_channel_emis = np.where(sensor_info.channel_names == '10v')
+#if loss_channel_emis[0].size != 1:
+#    print("Error: there must be a channel 10v to constrain the surface emissivity estimate", file=sys.stderr)
+#    sys.exit(1)
 
 nchannels, ngrid, nstep, nobs, nfields_float, nfields_int, x0, x0_int, y0, geolocation, grid = sm.training_data(
   ice_path, output_path, filename_append, sensor_info.sensors, sensor_info.channel_names,
@@ -98,6 +118,7 @@ with tf_strategy.scope():
     seaice_model = sm.SeaiceModel(nchannels=nchannels, ngrid=ngrid, nstep=nstep, nobs=nobs, grid=grid, 
       nfields_float=nfields_float, nfields_int=nfields_int, nsensors=nsensors,
       loss_channel_emis = loss_channel_emis[0][0],
+      zswath_width=sensor_info.zswath_width,zfov_spacing=sensor_info.zfov_spacing,
       background_bias=sensor_info.background_bias, bg_error_bias=sensor_info.background_bias_error,
       nlag=1, alpha=[0.6,0.4], emissivity_mapping=(sensor_info.frequency_maps,sensor_info.polarisation_maps))
     seaice_model.initialize(ice_path+'ifs_seaice_initials_year.nc', ice_path+'ifs_tsfc_year_dailyx.nc')
