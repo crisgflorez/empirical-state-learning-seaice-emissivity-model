@@ -153,7 +153,7 @@ class SeaiceSensors():
           'frequency': [23.8, 31.4, 50.3, 52.8],
           'background_bias': [0.0,0.0],
           'background_bias_error': 1,
-          'zswath_width':np.nan, #48.333333,
+          'zswath_width':48.333333,
           'zfov_spacing': 3.333333}
         
         # amsu-a onboard METOP-C
