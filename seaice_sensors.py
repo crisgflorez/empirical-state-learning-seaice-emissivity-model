@@ -180,7 +180,6 @@ class SeaiceSensors():
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
           'background_bias_error': 1,
-          'obs_error': [4.5, 5, 5, 2, 4.5],
           'zswath_width':48.333333,
           'zfov_spacing': 3.333333}
         
@@ -190,7 +189,6 @@ class SeaiceSensors():
           'frequency': [23.8, 31.4, 50.3, 52.8, 89],
           'background_bias': [0.0,0.0],
           'background_bias_error': 1,
-          'obs_error': [4.5, 5, 5, 2, 4.5],
           'zswath_width':48.333333,
           'zfov_spacing': 3.333333}
         

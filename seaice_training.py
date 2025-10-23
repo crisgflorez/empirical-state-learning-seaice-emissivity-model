@@ -101,10 +101,10 @@ nsensors = len(sensor_info.sensors)
 
 sm.seaice_layers.obs_error = sensor_info.obs_error
 
-#loss_channel_emis = np.where(sensor_info.channel_names == '10v')
-#if loss_channel_emis[0].size != 1:
-#    print("Error: there must be a channel 10v to constrain the surface emissivity estimate", file=sys.stderr)
-#    sys.exit(1)
+loss_channel_emis = np.where(sensor_info.channel_names == '24v')  #'10v'
+if loss_channel_emis[0].size != 1:
+    print("Error: there must be a channel 10v to constrain the surface emissivity estimate", file=sys.stderr)
+    sys.exit(1)
 
 nchannels, ngrid, nstep, nobs, nfields_float, nfields_int, x0, x0_int, y0, geolocation, grid = sm.training_data(
   ice_path, output_path, filename_append, sensor_info.sensors, sensor_info.channel_names,
