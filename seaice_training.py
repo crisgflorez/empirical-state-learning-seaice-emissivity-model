@@ -51,7 +51,7 @@ def get_args():
         print(" Detected VSCode/Jupyter interactive mode — using default debug arguments.")
         args = parser.parse_args([
             '--data', '/perm/dnk8355/netcdf_1april2024_31march2025/',
-            '--sensors', 'METOP-B', 'METOP-C',
+            '--sensors', 'METOP-B',
             '--output', '/perm/dnk8355/outputs_training_finalv2',
             '--tag', '_1april2024_31march2025'
         ])
@@ -121,7 +121,7 @@ with tf_strategy.scope():
       zswath_width=sensor_info.zswath_width,zfov_spacing=sensor_info.zfov_spacing,
       background_bias=sensor_info.background_bias, bg_error_bias=sensor_info.background_bias_error,
       nlag=1, alpha=[0.6,0.4], emissivity_mapping=(sensor_info.frequency_maps,sensor_info.polarisation_maps))
-    seaice_model.initialize(ice_path+'ifs_seaice_initials_year.nc', ice_path+'ifs_tsfc_year_dailyx.nc')
+    seaice_model.initialize(ice_path+'ifs_seaice_initials_METOP-B_1apr2024_31march2025_without_land_without_nans.nc', ice_path+'ifs_tsfc_METOP-B_1apr2024_31march2025_dailyx_without_land.nc')
 
     # Callback to allow updating the sea ice loss functions during training (in practice no effect as default loss is also 0.002)
     class EpochCallback(tf.keras.callbacks.Callback):
