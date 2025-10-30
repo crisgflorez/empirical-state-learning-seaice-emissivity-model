@@ -33,10 +33,10 @@ def predict_loop(model, distributor, nsplit, batchsize):
 
 def get_args():
     parser = argparse.ArgumentParser('Sea ice training v2')
-    parser.add_argument('--data', help='Directory containing the training data.', type=str)
-    parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+')
-    parser.add_argument('--output', help='Directory to store the output data.', type=str)
-    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str)
+    parser.add_argument('--data', help='Directory containing the training data.', type=str, default='/perm/dnk8355/netcdf_1april2024_31march2025/')
+    parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+', default=['METOP-B'])
+    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/outputs_training_finalv2')
+    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='_1april2024_31march2025')
     parser.add_argument('--modeltag', help='If not training, optionally use an existing model with a different tag name.', type=str, default=None)
     parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
     parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)

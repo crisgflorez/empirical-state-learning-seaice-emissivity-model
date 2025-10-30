@@ -1,0 +1,67 @@
+[ECMWF-INFO -ecprofile] /usr/bin/bash NON_INTERACTIVE on ac6-182 at 20251024_082549.418, PID: 3637869, JOBID: 33495641
+[ECMWF-INFO -ecprofile] $SCRATCH=/ec/res4/scratch/dnk8355
+[ECMWF-INFO -ecprofile] $PERM=/perm/dnk8355
+[ECMWF-INFO -ecprofile] $HPCPERM=/ec/res4/hpcperm/dnk8355
+[ECMWF-INFO -ecprofile] $TMPDIR=/etc/ecmwf/ssd/ssd1/tmpdirs/dnk8355.33495641
+[ECMWF-INFO -ecprofile] $SCRATCHDIR=/ec/res4/scratchdir/dnk8355/1/33495641
+2025-10-24 08:25:51.366902: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+/usr/local/apps/python3/3.10.10-01/lib/python3.10/site-packages/xarray/backends/plugins.py:71: RuntimeWarning: Engine 'cfgrib' loading failed:
+Cannot find the ecCodes library
+  warnings.warn(f"Engine {name!r} loading failed:\n{ex}", RuntimeWarning)
+2025-10-24 08:26:00.700421: E tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:267] failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+2025-10-24 08:26:00.700465: I tensorflow/compiler/xla/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (ac6-182.bullx): /proc/driver/nvidia/version does not exist
+2025-10-24 08:26:00.701075: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Traceback (most recent call last):
+  File "/home/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/seaice_training.py", line 118, in <module>
+    seaice_model = sm.SeaiceModel(nchannels=nchannels, ngrid=ngrid, nstep=nstep, nobs=nobs, grid=grid, 
+  File "/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/seaice_model.py", line 129, in __init__
+    bias_corrected_tb = self.bias_layer(allsky_tb, seaice_fraction, isensor)
+  File "/usr/local/apps/python3/3.10.10-01/lib/python3.10/site-packages/keras/utils/traceback_utils.py", line 70, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/etc/ecmwf/ssd/ssd1/tmpdirs/dnk8355.33495641/__autograph_generated_file2zrnwko5.py", line 11, in tf__call
+    bias_loss = ag__.converted_call(ag__.ld(tf).reduce_sum, (ag__.converted_call(ag__.ld(tf).math.squared_difference, (ag__.ld(self).instrument_bias, ag__.ld(self).background), None, fscope) / ag__.converted_call(ag__.ld(tf).tensordot, (ag__.converted_call(ag__.ld(tf).square, (ag__.ld(self).bg_error,), None, fscope), ag__.converted_call(ag__.ld(tf).ones, (ag__.ld(self).nchans,), None, fscope), 0), None, fscope),), None, fscope) / ag__.ld(self).nobs
+TypeError: Exception encountered when calling layer "bias_correction" (type BiasCorrection).
+
+in user code:
+
+    File "/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/seaice_layers.py", line 257, in call  *
+        bias_loss = tf.reduce_sum((tf.math.squared_difference(self.instrument_bias,self.background))/
+
+    TypeError: Input 'b' of 'MatMul' Op has type float32 that does not match type int32 of argument 'a'.
+
+
+Call arguments received by layer "bias_correction" (type BiasCorrection):
+  • tb=tf.Tensor(shape=(None, 4), dtype=float32)
+  • seaice_fraction=tf.Tensor(shape=(None,), dtype=float32)
+  • isensor=tf.Tensor(shape=(None,), dtype=int32)
+/var/spool/slurmd/job33495641/slurm_script: line 27: --trainonly: command not found
+/var/spool/slurmd/job33495641/slurm_script: line 28: --reproducible: command not found
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] This is the ECMWF job Epilogue
+[ECMWF-INFO -ecepilog] +++ Please report issues using the Support portal +++
+[ECMWF-INFO -ecepilog] +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] Run at 2025-10-24T08:26:03 on ac
+[ECMWF-INFO -ecepilog] JobName                   : seaice_finalV2
+[ECMWF-INFO -ecepilog] JobID                     : 33495641
+[ECMWF-INFO -ecepilog] Submit                    : 2025-10-24T08:25:43
+[ECMWF-INFO -ecepilog] Start                     : 2025-10-24T08:25:46
+[ECMWF-INFO -ecepilog] End                       : 2025-10-24T08:26:03
+[ECMWF-INFO -ecepilog] QueuedTime                : 3.0
+[ECMWF-INFO -ecepilog] ElapsedRaw                : 17
+[ECMWF-INFO -ecepilog] ExitCode                  : 127:0
+[ECMWF-INFO -ecepilog] DerivedExitCode           : 0:0
+[ECMWF-INFO -ecepilog] State                     : FAILED
+[ECMWF-INFO -ecepilog] Account                   : dkhirlam
+[ECMWF-INFO -ecepilog] QOS                       : nf
+[ECMWF-INFO -ecepilog] User                      : dnk8355
+[ECMWF-INFO -ecepilog] StdOut                    : /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_33495641.out
+[ECMWF-INFO -ecepilog] StdErr                    : /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_33495641.err
+[ECMWF-INFO -ecepilog] NNodes                    : 1
+[ECMWF-INFO -ecepilog] NCPUS                     : 2
+[ECMWF-INFO -ecepilog] SBU                       : 0.081
+[ECMWF-INFO -ecepilog] jobtag                    : dnk8355-seaice_finalV2-1x2-/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2__JOBID_.out
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+

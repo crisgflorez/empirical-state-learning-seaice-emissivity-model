@@ -15,7 +15,7 @@ module load python3/3.10.10-01
 
 
 sourcePath=/home/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model
-pyScript=test.py
+pyScript=seaice_training.py
 
 echo "starting ${pyScript} ...."
 python3 ${sourcePath}/${pyScript} \
@@ -23,6 +23,7 @@ python3 ${sourcePath}/${pyScript} \
   --sensors METOP-B \
   --output /perm/dnk8355/outputs_training_finalv2 \
   --tag _1april2024_31march2025 \
-  --diagsonly
-  --trainonly
+  --diagsonly \
+  --trainonly \
   --reproducible
+
