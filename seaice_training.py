@@ -51,7 +51,7 @@ def get_args():
         print(" Detected VSCode/Jupyter interactive mode — using default debug arguments.")
         args = parser.parse_args([
             '--data', '/perm/dnk8355/netcdf_1april2024_31march2025/',
-            '--sensors', 'METOP-B',
+            '--sensors', 'METOP-B','METOP-C',
             '--output', '/perm/dnk8355/outputs_training_finalv2',
             '--tag', '_1april2024_31march2025'
         ])
@@ -83,7 +83,7 @@ nepochs = args.nepochs
 do_diags = not args.trainonly
 do_train = not args.diagsonly
 
-# For larger training datasets, model.predict() crashes where model.fit() is fine - so predict over a split-up dataset
+# For larger training datasets, model.predict() crashes while model.fit() is fine - so predict over a split-up dataset
 nsplit = 3
 
 # ECMWF HPC specific config. 
@@ -101,9 +101,17 @@ nsensors = len(sensor_info.sensors)
 
 sm.seaice_layers.obs_error = sensor_info.obs_error
 
-loss_channel_emis = np.where(sensor_info.channel_names == '24v')  #'10v'
+if '10v' in sensor_info.channel_names:
+    loss_channel_emis = np.where(sensor_info.channel_names == '10v')
+    background_emis_value = 0.8
+elif '24v' in sensor_info.channel_names:
+    loss_channel_emis = np.where(sensor_info.channel_names == '24v')
+    background_emis_value = 0.7
+else:
+    raise ValueError("No valid emissivity channel (10v or 24v) found for loss computation.")
+
 if loss_channel_emis[0].size != 1:
-    print("Error: there must be a channel 10v to constrain the surface emissivity estimate", file=sys.stderr)
+    print("Error: there must be a channel 10v or 24v to constrain the surface emissivity estimate", file=sys.stderr)
     sys.exit(1)
 
 nchannels, ngrid, nstep, nobs, nfields_float, nfields_int, x0, x0_int, y0, geolocation, grid = sm.training_data(
@@ -111,14 +119,14 @@ nchannels, ngrid, nstep, nobs, nfields_float, nfields_int, x0, x0_int, y0, geolo
   channel_maps=sensor_info.channel_maps, channel_basis=sensor_info.channel_basis,
   restrict_steps_to=restrict_steps_to, step_start=step_start)
 
-distributor = sm.TrainingDataDistributor(nobs, x0, x0_int, y0, batch_size=batchsize, nsplit=nsplit)
+pol0, pol1=sm.compute_polarization_coeffs(x0, sensor_info.polarisation_maps, sensor_info.sensor_type, sensor_info.zswath_width, sensor_info.zfov_spacing)
+distributor = sm.TrainingDataDistributor(nobs, x0, x0_int, y0, pol0, pol1, batch_size=batchsize, nsplit=nsplit)
 
 tf_strategy = tf.distribute.get_strategy()
 with tf_strategy.scope():
     seaice_model = sm.SeaiceModel(nchannels=nchannels, ngrid=ngrid, nstep=nstep, nobs=nobs, grid=grid, 
       nfields_float=nfields_float, nfields_int=nfields_int, nsensors=nsensors,
-      loss_channel_emis = loss_channel_emis[0][0],
-      zswath_width=sensor_info.zswath_width,zfov_spacing=sensor_info.zfov_spacing,
+      loss_channel_emis = loss_channel_emis[0][0],background_emis=background_emis_value,
       background_bias=sensor_info.background_bias, bg_error_bias=sensor_info.background_bias_error,
       nlag=1, alpha=[0.6,0.4], emissivity_mapping=(sensor_info.frequency_maps,sensor_info.polarisation_maps))
     seaice_model.initialize(ice_path+'ifs_seaice_initials_METOP-B_1apr2024_31march2025_without_land_without_nans.nc', ice_path+'ifs_tsfc_METOP-B_1apr2024_31march2025_dailyx_without_land.nc')

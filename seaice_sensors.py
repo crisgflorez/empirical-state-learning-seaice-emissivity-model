@@ -59,7 +59,7 @@ class SeaiceSensors():
         self.background_bias_error = []
         self.zswath_width = []
         self.zfov_spacing = []
-
+        self.sensor_type = []
         print('Unified channel basis:', self.channel_names)
            
         frequency_basis = self.all_channel_frequencies[iUsedChannels]
@@ -85,7 +85,9 @@ class SeaiceSensors():
             self.zswath_width.append(self.all_sensors[key]['zswath_width'])
 
             self.zfov_spacing.append(self.all_sensors[key]['zfov_spacing'])
-                        
+            
+            self.sensor_type.append(self.all_sensors[key]['type_sensor'])
+
         self.frequency_maps = np.stack(self.frequency_maps)
         self.polarisation_maps = np.stack(self.polarisation_maps)
         self.background_bias = np.transpose(self.background_bias)
@@ -121,14 +123,16 @@ class SeaiceSensors():
           'background_bias': [0.0,0.0],
           'background_bias_error': 2.0,
           'zswath_width':np.nan,
-          'zfov_spacing':np.nan}
+          'zfov_spacing':np.nan,
+          'type_sensor': 'conical'}
 
         self.all_sensors['amsr2'] = {
           'channel': ['10v','10h','19v','19h','24v','24h','37v','37h','89v','89h'],
           'background_bias': [5.0,2.5],
           'background_bias_error': 0.5,
           'zswath_width':75,
-          'zfov_spacing':0.620}
+          'zfov_spacing':0.620,
+          'type_sensor': 'conical'}
 
         # SSMIS needs to over-ride the default frequencies, being an older non-standard sensor
         self.all_sensors['ssmisf17'] = {
@@ -137,7 +141,8 @@ class SeaiceSensors():
           'background_bias': [0.0,0.0],
           'background_bias_error': 4.0,
           'zswath_width':72,
-          'zfov_spacing':2.441}
+          'zfov_spacing':2.441,
+          'type_sensor': 'conical'}
 
         # GMI, noting that input files were unwittingly created with a different ordering of 183 GHz channels
         self.all_sensors['gmi'] = {
@@ -145,7 +150,8 @@ class SeaiceSensors():
           'background_bias': [0.0,0.0],
           'background_bias_error': 0.001,
           'zswath_width':70,
-          'zfov_spacing':0.633}
+          'zfov_spacing':0.633,
+          'type_sensor': 'conical'}
         
         # amsu-a onboard METOP-B
         self.all_sensors['METOP-B'] = {
@@ -154,7 +160,8 @@ class SeaiceSensors():
           'background_bias': [0.0,0.0],
           'background_bias_error': 1.0,
           'zswath_width':48.333333,
-          'zfov_spacing': 3.333333}
+          'zfov_spacing': 3.333333,
+          'type_sensor': 'cross-track'}
         
         # amsu-a onboard METOP-C
         self.all_sensors['METOP-C'] = {
@@ -163,7 +170,8 @@ class SeaiceSensors():
           'background_bias': [0.0,0.0],
           'background_bias_error': 1.0,
           'zswath_width':48.333333,
-          'zfov_spacing': 3.333333}
+          'zfov_spacing': 3.333333,
+          'type_sensor': 'cross-track'}
         
         # amsu-a onboard NOAA15
         self.all_sensors['NOAA-15'] = {
@@ -172,7 +180,8 @@ class SeaiceSensors():
           'background_bias': [0.0,0.0],
           'background_bias_error': 1.0,
           'zswath_width':48.333333,
-          'zfov_spacing': 3.333333}
+          'zfov_spacing': 3.333333,
+          'type_sensor': 'cross-track'}
 
         # amsu-a onboard NOAA18
         self.all_sensors['NOAA-18'] = {
@@ -181,7 +190,8 @@ class SeaiceSensors():
           'background_bias': [0.0,0.0],
           'background_bias_error': 1.0,
           'zswath_width':48.333333,
-          'zfov_spacing': 3.333333}
+          'zfov_spacing': 3.333333,
+          'type_sensor': 'cross-track'}
         
         # amsu-a onboard NOAA19
         self.all_sensors['NOAA-19'] = {
@@ -190,5 +200,6 @@ class SeaiceSensors():
           'background_bias': [0.0,0.0],
           'background_bias_error': 1.0,
           'zswath_width':48.333333,
-          'zfov_spacing': 3.333333}
+          'zfov_spacing': 3.333333,
+          'type_sensor': 'cross-track'}
         

@@ -50,38 +50,31 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
         self.layers.append(tf.keras.layers.Dense(width,activation=activation))
         self.layers.append(tf.keras.layers.Dense(npol,activation=activation))
         self.frequency_mapping=emissivity_mapping[0]
-        self.polarisation_mapping=emissivity_mapping[1]
+        #self.polarisation_mapping=emissivity_mapping[1]
         self.bg_error = bg_error
         self.background = background
         self.use_loss = use_loss
         self.nobs = nobs
         self.channels = channels
         self.loss_channel = loss_channel
-    def call(self, tsfc, ice_properties, isensor, scanpos, zswath_width, zfov_spacing):
-        scan_angle = (-tf.gather(tf.cast(zswath_width, tf.float32), isensor)
-            + (tf.cast(scanpos, tf.float32) - 1.0)
-            * tf.gather(tf.cast(zfov_spacing, tf.float32), isensor)
-        ) #If zswath_width, zfov_spacing or scanpos is NaN, scan_angle will be NaN
-        
-        #When scan_angle is NaN, set it to 0.0
-        #This happens when the sensor is a conical scanner without a scan angle or when we have missing data of zswath_width or zfov_spacing 
-        scan_angle = tf.where(tf.math.is_nan(scan_angle), tf.zeros_like(scan_angle, dtype=tf.float32), scan_angle)
-
-        scan_angle_rad = scan_angle * (np.pi / 180.0)
+    def call(self, tsfc, ice_properties, isensor, pol0, pol1):
         inputs = tf.concat([tf.reshape(tsfc,(-1,1)),ice_properties],1)
         out = []
         for i in range(self.channels):
             index = tf.concat([tf.reshape(isensor,(-1,1)),tf.reshape(i+tf.zeros_like(isensor),(-1,1))],1)
             freq = tf.reshape(tf.gather_nd(self.frequency_mapping,   index),(-1,1))/100.0
-            pol  = tf.reshape(tf.gather_nd(self.polarisation_mapping,index),(-1,1))
+
             inputs_freq = tf.concat([inputs,freq],1)
             mid1 = self.layers[0](inputs_freq)
             pol_pair = self.layers[1](mid1)
             # Polarisation mixing (add cos^2 scan angle for cross-track QV/QH version eventually)
-            pol_pair_corr_v = pol_pair[:,0]*tf.cos(scan_angle_rad)**2 + pol_pair[:,1]*tf.sin(scan_angle_rad)**2
-            pol_pair_corr_h = pol_pair[:,0]*tf.sin(scan_angle_rad)**2 + pol_pair[:,1]*tf.cos(scan_angle_rad)**2
+            # pol_pair_corr_v = pol_pair[:,0]*tf.cos(scan_angle_rad)**2 + pol_pair[:,1]*tf.sin(scan_angle_rad)**2
+            # pol_pair_corr_h = pol_pair[:,0]*tf.sin(scan_angle_rad)**2 + pol_pair[:,1]*tf.cos(scan_angle_rad)**2
 
-            one_channel = (1-pol[:,0])*pol_pair_corr_v + pol[:,0]*pol_pair_corr_h
+            # one_channel = (1-pol[:,0])*pol_pair_corr_v + pol[:,0]*pol_pair_corr_h
+            pol0_i = pol0[:, i]
+            pol1_i = pol1[:, i]
+            one_channel = pol0_i*pol_pair[:,0]+pol1_i*pol_pair[:,1] 
             out.append(one_channel)
         out = tf.stack(out,1)
         if self.use_loss:

@@ -24,7 +24,7 @@ class SeaiceModel:
     def __init__(self, nchannels=18, nprop_grid=2, nprop_obs=1, ngrid=1, nstep=1, nobs=1, nlag=0, alpha=[1.0],
                  bg_error_seaice=0.002, bg_error_false_sic=0.02, bg_error_emis=1e-5, background_emis=0.8, seaice_use_loss=False,
                  seaice_use_pdf_loss=True, seaice_use_tsfc_loss=True, penalise_false_sic=True, emis_use_bounds_loss=True,
-                 loss_channel_emis=0, zswath_width=None,zfov_spacing=None,background_bias=None, bg_error_bias=None,
+                 loss_channel_emis=0, background_bias=None, bg_error_bias=None,
                  width_nn=7, grid=None, nfields_float=7, nfields_int=1, nsensors=3, emissivity_mapping=None):
         """
         Initialize the network structure and internal and external dimensions
@@ -55,8 +55,6 @@ class SeaiceModel:
         self.setup['background_emis'] = background_emis
         self.setup['loss_channel_emis'] = loss_channel_emis
 
-        self.setup['zswath_width'] = zswath_width
-        self.setup['zfov_spacing'] = zfov_spacing
         self.setup['bg_error_bias']   = bg_error_bias
         self.setup['background_bias'] = background_bias
 
@@ -65,7 +63,9 @@ class SeaiceModel:
         # TF model training is much faster if the inputs are a single tensor
         self.inputs_float = tf.keras.Input(shape=(nfields_float+nchannels*7,)) #7 is the number of channel-dependent input fields other than OBSVALUE
         self.inputs_int   = tf.keras.Input(shape=(nfields_int,),dtype="int32")
-        self.inputs       = [self.inputs_float, self.inputs_int]
+        self.inputs_pol0 = tf.keras.Input(shape=(nchannels,))
+        self.inputs_pol1 = tf.keras.Input(shape=(nchannels,))
+        self.inputs = [self.inputs_float, self.inputs_int, self.inputs_pol0, self.inputs_pol1]
                 
         # Split the input tensor into named variables
         tsfc_norm = self.inputs_float[:,0]
@@ -75,8 +75,10 @@ class SeaiceModel:
         cloud_fraction = self.inputs_float[:,5]
         iobs = self.inputs_int[:,0]
         isensor = tf.cast(self.inputs_float[:,6],tf.int32)
-        scanpos = self.inputs_float[:,7] #This is not int32 to allow for NaN values in scanpos
+        #scanpos = self.inputs_float[:,7] #This is not int32 to allow for NaN values in scanpos
         zenith = self.inputs_float[:,8]
+        pol0 = self.inputs_pol0
+        pol1 = self.inputs_pol1
 
         emis_ocean = self.inputs_float[:,nfields_float:nfields_float+nchannels]
         tausfc_clear = self.inputs_float[:,nfields_float+nchannels:nfields_float+2*nchannels]
@@ -118,7 +120,7 @@ class SeaiceModel:
         ice_prop_grid = self.ice_prop_layer_grid(geolocation)
         ice_prop_obs  = self.ice_prop_layer_obs(iobs)
         ice_prop = tf.concat([ice_prop_grid,ice_prop_obs],1)
-        self.emis_seaice = self.seaice_emis_layer(tsfc_norm, ice_prop, isensor, scanpos, zswath_width, zfov_spacing)
+        self.emis_seaice = self.seaice_emis_layer(tsfc_norm, ice_prop, isensor, pol0, pol1)
         emis_ocean_bc = self.ocean_emis_layer(windspeed, emis_ocean)
         seaice_fraction = self.seaice_layer(geolocation, tsfc)
         surface_emitted, emis_mixed = self.surface_terms_layer(seaice_fraction, emis_ocean_bc, self.emis_seaice, tsfc)
@@ -257,12 +259,14 @@ class TrainingDataDistributor():
     The "nsplit" approach allows the training dataset to be further split up (sharded).
     (Developed because model.predict() has an apparent bug - Non-OK-status: GpuLaunchKernel - for larger datasets.)
     """
-    def __init__(self,nobs,x,x_int,y,batch_size=1024,nsplit=1):
+    def __init__(self,nobs,x,x_int,y,pol0,pol1,batch_size=1024,nsplit=1):
         self.batch_size = batch_size
         self.nobs = nobs
         self.x = x
         self.x_int = x_int
         self.y = y
+        self.pol0 = pol0
+        self.pol1 = pol1
         self.makeSplit(nsplit)
 
     def makeSplit(self,nsplit):
@@ -282,7 +286,9 @@ class TrainingDataDistributor():
     def getBatch(self,batch_number,isplit):
         istart = np.int64(np.int64(batch_number)*self.batch_size + self.split_start[isplit])
         iend = np.min([istart+self.batch_size,self.split_end[isplit]])
-        return [self.x[istart:iend,:], self.x_int[istart:iend,:]] , self.y[istart:iend,:]
+        return [self.x[istart:iend,:], self.x_int[istart:iend,:],self.pol0[istart:iend,:],
+            self.pol1[istart:iend,:]
+        ] , self.y[istart:iend,:]
 
 def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_day=1, restrict_steps_to=-1,
     restrict_nobs_to=-1, step_start=0, channel_basis=None, channel_maps=None):
@@ -481,6 +487,85 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     da.close()
 
     return nchannels, ngrid, nstep, nobs_total, nfields_float, nfields_int, x0, x0_int, y0, geolocation, grid
+
+
+def compute_polarization_coeffs(x0, polarisation_maps, sensor_type, zswath_width, zfov_spacing):
+    """
+    Calculate pol0 y pol1 (nobs, nchannels) which are the mixing polarization coefficients
+    """
+
+    nobs_total = x0.shape[0]
+    nsensors   = polarisation_maps.shape[0]
+    nchannels  = polarisation_maps.shape[1]
+    #polarisation_maps     shape (nsensors, nchannels)
+
+    # OUTPUTS
+    pol0 = np.zeros((nobs_total, nchannels), np.float32)
+    pol1 = np.zeros((nobs_total, nchannels), np.float32)
+
+    # INPUT DATA
+    isensor_all = x0[:, 6].astype(int)
+    scanpos_all = x0[:, 7]
+
+    zswath = np.array(zswath_width)
+    zfov   = np.array(zfov_spacing)
+
+    # ---------------------------------------------------
+    # Precompute cos² y sin² per observation
+    # ---------------------------------------------------
+    cos2_all = np.ones(nobs_total, np.float32)     # conical by default
+    sin2_all = np.zeros(nobs_total, np.float32)
+
+    for isens in range(nsensors):
+        idx = np.where(isensor_all == isens)[0]
+        if len(idx) == 0:
+            continue
+
+        if sensor_type[isens] == "cross-track":
+            theta = (-zswath[isens]
+                    + (scanpos_all[idx] - 1.0) * zfov[isens]) #Scan angle for cross track sensor
+            th = np.deg2rad(theta)
+            cos2_all[idx] = np.cos(th)**2
+            sin2_all[idx] = np.sin(th)**2
+
+    for ch in range(nchannels):
+
+        # (nobs,2): [id_sensor, id_channel]
+        index = np.column_stack([isensor_all, np.full(nobs_total, ch, dtype=int)])
+
+        # nominal polarization : (nobs,)
+        pol_nom = polarisation_maps[index[:,0], index[:,1]]
+
+        # type of sensor per observation: (nobs,)
+        stype_obs = np.array(sensor_type)[index[:,0]]
+
+        # ----- conical -----
+        mask_con = (stype_obs == "conical")
+
+        # V
+        mask_V = mask_con & (pol_nom == 0)
+        pol0[mask_V, ch] = 1.0
+        pol1[mask_V, ch] = 0.0
+
+        # H
+        mask_H = mask_con & (pol_nom == 1)
+        pol0[mask_H, ch] = 0.0
+        pol1[mask_H, ch] = 1.0
+
+        # ----- cross-track -----
+        mask_cross = (stype_obs == "cross-track")
+
+        # QV → (cos², sin²)
+        mask_QV = mask_cross & (pol_nom == 0)
+        pol0[mask_QV, ch] = cos2_all[mask_QV]
+        pol1[mask_QV, ch] = sin2_all[mask_QV]
+
+        # QH → (sin², cos²)
+        mask_QH = mask_cross & (pol_nom == 1)
+        pol0[mask_QH, ch] = sin2_all[mask_QH]
+        pol1[mask_QH, ch] = cos2_all[mask_QH]
+
+    return pol0, pol1
 
 def save_model_outputs(model_tb_list, geolocation, fname, channel_names, varname='tb', mask=True):
 
