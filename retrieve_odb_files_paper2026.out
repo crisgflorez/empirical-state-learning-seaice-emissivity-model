@@ -1,0 +1,662 @@
+[ECMWF-INFO -sbatch] - -------------------------------------------------------------------------------------
+[ECMWF-INFO -sbatch] -  This is the ECMWF jobfilter
+[ECMWF-INFO -sbatch] -  +++ Please report issues using the Support portal +++
+[ECMWF-INFO -sbatch] -  +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -sbatch] -  /usr/local/bin/ecsbatch: size: 53801, mtime: Tue Nov 25 10:26:07 2025
+[ECMWF-INFO -sbatch] - -------------------------------------------------------------------------------------
+[ECMWF-INFO -sbatch] - Time at submit: Tue Jun 16 15:08:31 2026 (1781622511.2567165) on ad6-197.bullx:/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model
+[ECMWF-INFO -sbatch] - --- SLURM VARIABLES ---
+[ECMWF-INFO -sbatch] - EC_CLUSTER=ad
+[ECMWF-INFO -sbatch] - SLURM_EXPORT_ENV=ALL
+[ECMWF-INFO -sbatch] - SLURM_JOB_ID=41127035
+[ECMWF-INFO -sbatch] - SBATCH_EXPORT=NONE
+[ECMWF-INFO -sbatch] - -----------------------
+[ECMWF-INFO -sbatch] - jobscript: /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/get_ECMWF_ODB_amsua.sh
+[ECMWF-INFO -sbatch] - --- SCRIPT OPTIONS ---
+[ECMWF-INFO -sbatch] - #SBATCH --qos=np
+[ECMWF-INFO -sbatch] - #SBATCH --time=12:00:00
+[ECMWF-INFO -sbatch] - #SBATCH --nodes=1
+[ECMWF-INFO -sbatch] - #SBATCH --ntasks=1
+[ECMWF-INFO -sbatch] - #SBATCH --output=retrieve_odb_files_paper2026.out
+[ECMWF-INFO -sbatch] - #SBATCH --job-name=retrieve_odb_files_paper2026
+[ECMWF-INFO -sbatch] - -----------------------
+[ECMWF-INFO -sbatch] - --- POST-PROCESSED OPTIONS ---
+[ECMWF-INFO -sbatch] - ARG --positional=['get_ECMWF_ODB_amsua.sh']
+[ECMWF-INFO -sbatch] - ARG --job_name=retrieve_odb_files_paper2026
+[ECMWF-INFO -sbatch] - ARG --ntasks=1
+[ECMWF-INFO -sbatch] - ARG --nodes=1
+[ECMWF-INFO -sbatch] - ARG --output=retrieve_odb_files_paper2026.out
+[ECMWF-INFO -sbatch] - ARG --qos=np
+[ECMWF-INFO -sbatch] - ARG --time=12:00:00
+[ECMWF-INFO -sbatch] - ------------------------------
+[ECMWF-INFO -sbatch] - jobtag: dnk8355-retrieve_o__paper2026-1x256-/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/retrieve_odb_files_paper2026.out
+[ECMWF-INFO -sbatch] - ['/usr/bin/sbatch', '--job-name=retrieve_odb_files_paper2026', '--ntasks=1', '--nodes=1', '--output=retrieve_odb_files_paper2026.out', '--qos=np', '--time=12:00:00', '--licenses=h2resw01', '--export=EC_user_time_limit=12:00:00', '/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/get_ECMWF_ODB_amsua.sh']
+[ECMWF-INFO -sbatch] - sbatch executed on ad
+[ECMWF-INFO -sbatch] - Job queued on ad using method local
+[ECMWF-INFO -sbatch] - Submitted batch job 41194918
+[ECMWF-INFO -ecprofile] /usr/bin/bash NON_INTERACTIVE on ad1-2087 at 20260616_150855.783, PID: 3241899, JOBID: 41194918
+[ECMWF-INFO -ecprofile] $SCRATCH=/ec/res4/scratch/dnk8355
+[ECMWF-INFO -ecprofile] $PERM=/perm/dnk8355
+[ECMWF-INFO -ecprofile] $HPCPERM=/ec/res4/hpcperm/dnk8355
+[ECMWF-INFO -ecprofile] $TMPDIR=/dev/shm/_tmpdir_.dnk8355.41194918
+[ECMWF-INFO -ecprofile] $SCRATCHDIR=/ec/res4/scratchdir/dnk8355/6/41194918
+#####################
+my dir is: /perm/dnk8355/paper2026/odb_files
+Tue Jun 16 15:08:55 UTC 2026 - Start MARS retrieval
+#####################
+ 
+2024-04-01 | expID: 79
+mars - WARN - 
+mars - WARN - 
+MIR environment variables:
+MIR_CACHE_PATH={FILE?/ec/cache.1}/cache:{FILE?/ec/cache.2}/cache
+MIR_LSM_NAMED=1km.climate.v013
+Using MARS binary: /usr/local/apps/mars/versions/6.34.4.11/bin/mars.bin
+mars - INFO   - 20260616.150856 - Welcome to MARS
+mars - INFO   - 20260616.150856 - MARS_HOME=/usr/local/apps/mars/configs/prod
+mars - INFO   - 20260616.150856 - MARS Client build stamp: 20260421054856
+mars - INFO   - 20260616.150856 - MARS Client bundle version: 6.34.4.11
+mars - INFO   - 20260616.150856 - package mars-client version: 6.34.4
+mars - INFO   - 20260616.150856 - package mir version: 1.23.9
+mars - INFO   - 20260616.150856 - package odc version: 1.6.3
+mars - INFO   - 20260616.150856 - package fdb version: 5.21.1
+mars - INFO   - 20260616.150856 - package metkit version: 1.18.0
+mars - INFO   - 20260616.150856 - package eckit version: 2.0.7
+mars - INFO   - 20260616.150856 - package eccodes version: 2.46.3
+RETRIEVE,
+    STREAM=lwda,
+    CLASS=od,
+    EXPVER=79,
+    TYPE=OFB,
+    DATE=20240401,
+    TIME=00/12,
+    REPORTYPE=21009/21010,
+    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    TARGET=amsua_ofb_lwda_20240401_NH_SH_variables_filtered_lsm_lower02.odb
+
+
+mars - INFO   - 20260616.150856 - Processing request 1
+
+RETRIEVE,
+    CLASS      = OD,
+    TYPE       = OFB,
+    STREAM     = LWDA,
+    EXPVER     = 0079,
+    REPRES     = BU,
+    REPORTYPE  = 21009/21010,
+    OBSTYPE    = 1,
+    DATE       = 20240401,
+    TIME       = 0000/1200,
+    DOMAIN     = G,
+    TARGET     = amsua_ofb_lwda_20240401_NH_SH_variables_filtered_lsm_lower02.odb,
+    FILTER     = "select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    DUPLICATES = KEEP
+
+mars - INFO   - 20260616.150856 - Setting SO_SNDBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.150856 - Current value is 8192 (8.00 K)
+mars - WARN   - 20260616.150856 - SO_SNDBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.150856 - Setting SO_RCVBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.150856 - Current value is 43690 (42.67 K)
+mars - WARN   - 20260616.150856 - SO_RCVBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.150856 - Calling mars on 'marsod-core', local port is 44899
+mars - INFO   - 20260616.150856 - Callback at address 10.100.148.184, port 44899
+mars - INFO   - 20260616.150856 - Mars client is on ad1-2087.bullx (10.100.148.184) 44899
+mars - INFO   - 20260616.150856 - Mars server is on 10.112.5.10 50264
+mars - INFO   - 20260616.150856 - Server task is 7204 [marsod]
+mars - INFO   - 20260616.150856 - Request cost: 0 field,  [marsod]
+mars - INFO   - 20260616.150856 - The efficiency of your requests in the last 12 hours is 100% [marsod]
+mars - WARN   - 20260616.150856 - Data not found [marsod]
+mars - INFO   - 20260616.150856 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 0
+mars - INFO   - 20260616.150856 - Calling mars on 'marsode-core', local port is 34175
+mars - INFO   - 20260616.150856 - Callback at address 10.100.148.184, port 34175
+mars - INFO   - 20260616.150857 - Mars client is on ad1-2087.bullx (10.100.148.184) 34175
+mars - INFO   - 20260616.150857 - Mars server is on 10.112.2.10 37393
+mars - INFO   - 20260616.150857 - Server task is 145 [marsode]
+mars - INFO   - 20260616.150857 - Request cost: 4 fields, 372.223 Mbytes on 1 tape, nodes: hpss, libraries: ibmlib08 [marsode]
+mars - INFO   - 20260616.150857 - The efficiency of your requests in the last 12 hours is 100% [marsode]
+mars - INFO   - 20260616.151057 - Transfering 390303874 bytes
+mars - INFO   - 20260616.151057 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 390303874
+mars - INFO   - 20260616.151102 - 1 ODB message retrieved from 'marsode'
+mars - WARN   - 20260616.151102 - Visiting database marsode : expected 0, got 1
+mars - INFO   - 20260616.151102 - Request time:  wall: 2 min 6 sec  cpu: 4 sec 
+mars - INFO   - 20260616.151102 -   Processing in marsode: wall: 2 min 1 sec 
+mars - INFO   - 20260616.151102 -   Visiting marsode: wall: 2 min 6 sec 
+mars - INFO   - 20260616.151102 - Memory used: 310.73 Mbyte(s)
+mars - INFO   - 20260616.151102 - No errors reported
+2024-04-02 | expID: 79
+mars - WARN - 
+mars - WARN - 
+MIR environment variables:
+MIR_CACHE_PATH={FILE?/ec/cache.1}/cache:{FILE?/ec/cache.2}/cache
+MIR_LSM_NAMED=1km.climate.v013
+Using MARS binary: /usr/local/apps/mars/versions/6.34.4.11/bin/mars.bin
+mars - INFO   - 20260616.151103 - Welcome to MARS
+mars - INFO   - 20260616.151103 - MARS_HOME=/usr/local/apps/mars/configs/prod
+mars - INFO   - 20260616.151103 - MARS Client build stamp: 20260421054856
+mars - INFO   - 20260616.151103 - MARS Client bundle version: 6.34.4.11
+mars - INFO   - 20260616.151103 - package mars-client version: 6.34.4
+mars - INFO   - 20260616.151103 - package mir version: 1.23.9
+mars - INFO   - 20260616.151103 - package odc version: 1.6.3
+mars - INFO   - 20260616.151103 - package fdb version: 5.21.1
+mars - INFO   - 20260616.151103 - package metkit version: 1.18.0
+mars - INFO   - 20260616.151103 - package eckit version: 2.0.7
+mars - INFO   - 20260616.151103 - package eccodes version: 2.46.3
+RETRIEVE,
+    STREAM=lwda,
+    CLASS=od,
+    EXPVER=79,
+    TYPE=OFB,
+    DATE=20240402,
+    TIME=00/12,
+    REPORTYPE=21009/21010,
+    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    TARGET=amsua_ofb_lwda_20240402_NH_SH_variables_filtered_lsm_lower02.odb
+
+
+mars - INFO   - 20260616.151103 - Processing request 1
+
+RETRIEVE,
+    CLASS      = OD,
+    TYPE       = OFB,
+    STREAM     = LWDA,
+    EXPVER     = 0079,
+    REPRES     = BU,
+    REPORTYPE  = 21009/21010,
+    OBSTYPE    = 1,
+    DATE       = 20240402,
+    TIME       = 0000/1200,
+    DOMAIN     = G,
+    TARGET     = amsua_ofb_lwda_20240402_NH_SH_variables_filtered_lsm_lower02.odb,
+    FILTER     = "select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    DUPLICATES = KEEP
+
+mars - INFO   - 20260616.151103 - Setting SO_SNDBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151103 - Current value is 8192 (8.00 K)
+mars - WARN   - 20260616.151103 - SO_SNDBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151103 - Setting SO_RCVBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151103 - Current value is 43690 (42.67 K)
+mars - WARN   - 20260616.151103 - SO_RCVBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151103 - Calling mars on 'marsod-core', local port is 37039
+mars - INFO   - 20260616.151103 - Callback at address 10.100.148.184, port 37039
+mars - INFO   - 20260616.151103 - Mars client is on ad1-2087.bullx (10.100.148.184) 37039
+mars - INFO   - 20260616.151103 - Mars server is on 10.112.5.10 57487
+mars - INFO   - 20260616.151103 - Server task is 2423 [marsod]
+mars - INFO   - 20260616.151103 - Request cost: 0 field,  [marsod]
+mars - INFO   - 20260616.151103 - The efficiency of your requests in the last 12 hours is 100% [marsod]
+mars - WARN   - 20260616.151103 - Data not found [marsod]
+mars - INFO   - 20260616.151103 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 0
+mars - INFO   - 20260616.151103 - Calling mars on 'marsode-core', local port is 55519
+mars - INFO   - 20260616.151103 - Callback at address 10.100.148.184, port 55519
+mars - INFO   - 20260616.151103 - Mars client is on ad1-2087.bullx (10.100.148.184) 55519
+mars - INFO   - 20260616.151103 - Mars server is on 10.112.2.10 41368
+mars - INFO   - 20260616.151103 - Server task is 145 [marsode]
+mars - INFO   - 20260616.151103 - Request cost: 4 fields, 343.895 Mbytes on 1 tape, nodes: hpss, libraries: ibmlib08 [marsode]
+mars - INFO   - 20260616.151103 - The efficiency of your requests in the last 12 hours is 100% [marsode]
+mars - INFO   - 20260616.151135 - Transfering 360600062 bytes
+mars - INFO   - 20260616.151135 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 360600062
+mars - INFO   - 20260616.151139 - 1 ODB message retrieved from 'marsode'
+mars - WARN   - 20260616.151139 - Visiting database marsode : expected 0, got 1
+mars - INFO   - 20260616.151139 - Request time:  wall: 36 sec  cpu: 4 sec 
+mars - INFO   - 20260616.151139 -   Processing in marsode: wall: 32 sec 
+mars - INFO   - 20260616.151139 -   Visiting marsode: wall: 36 sec 
+mars - INFO   - 20260616.151139 - Memory used: 297.81 Mbyte(s)
+mars - INFO   - 20260616.151139 - No errors reported
+2024-04-03 | expID: 79
+mars - WARN - 
+mars - WARN - 
+MIR environment variables:
+MIR_CACHE_PATH={FILE?/ec/cache.1}/cache:{FILE?/ec/cache.2}/cache
+MIR_LSM_NAMED=1km.climate.v013
+Using MARS binary: /usr/local/apps/mars/versions/6.34.4.11/bin/mars.bin
+mars - INFO   - 20260616.151140 - Welcome to MARS
+mars - INFO   - 20260616.151140 - MARS_HOME=/usr/local/apps/mars/configs/prod
+mars - INFO   - 20260616.151140 - MARS Client build stamp: 20260421054856
+mars - INFO   - 20260616.151140 - MARS Client bundle version: 6.34.4.11
+mars - INFO   - 20260616.151140 - package mars-client version: 6.34.4
+mars - INFO   - 20260616.151140 - package mir version: 1.23.9
+mars - INFO   - 20260616.151140 - package odc version: 1.6.3
+mars - INFO   - 20260616.151140 - package fdb version: 5.21.1
+mars - INFO   - 20260616.151140 - package metkit version: 1.18.0
+mars - INFO   - 20260616.151140 - package eckit version: 2.0.7
+mars - INFO   - 20260616.151140 - package eccodes version: 2.46.3
+RETRIEVE,
+    STREAM=lwda,
+    CLASS=od,
+    EXPVER=79,
+    TYPE=OFB,
+    DATE=20240403,
+    TIME=00/12,
+    REPORTYPE=21009/21010,
+    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    TARGET=amsua_ofb_lwda_20240403_NH_SH_variables_filtered_lsm_lower02.odb
+
+
+mars - INFO   - 20260616.151140 - Processing request 1
+
+RETRIEVE,
+    CLASS      = OD,
+    TYPE       = OFB,
+    STREAM     = LWDA,
+    EXPVER     = 0079,
+    REPRES     = BU,
+    REPORTYPE  = 21009/21010,
+    OBSTYPE    = 1,
+    DATE       = 20240403,
+    TIME       = 0000/1200,
+    DOMAIN     = G,
+    TARGET     = amsua_ofb_lwda_20240403_NH_SH_variables_filtered_lsm_lower02.odb,
+    FILTER     = "select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    DUPLICATES = KEEP
+
+mars - INFO   - 20260616.151140 - Setting SO_SNDBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151140 - Current value is 8192 (8.00 K)
+mars - WARN   - 20260616.151140 - SO_SNDBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151140 - Setting SO_RCVBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151140 - Current value is 43690 (42.67 K)
+mars - WARN   - 20260616.151140 - SO_RCVBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151140 - Calling mars on 'marsod-core', local port is 60055
+mars - INFO   - 20260616.151140 - Callback at address 10.100.148.184, port 60055
+mars - INFO   - 20260616.151140 - Mars client is on ad1-2087.bullx (10.100.148.184) 60055
+mars - INFO   - 20260616.151140 - Mars server is on 10.112.5.10 49233
+mars - INFO   - 20260616.151140 - Server task is 5417 [marsod]
+mars - INFO   - 20260616.151140 - Request cost: 0 field,  [marsod]
+mars - INFO   - 20260616.151140 - The efficiency of your requests in the last 12 hours is 100% [marsod]
+mars - WARN   - 20260616.151140 - Data not found [marsod]
+mars - INFO   - 20260616.151140 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 0
+mars - INFO   - 20260616.151140 - Calling mars on 'marsode-core', local port is 43337
+mars - INFO   - 20260616.151140 - Callback at address 10.100.148.184, port 43337
+mars - INFO   - 20260616.151140 - Mars client is on ad1-2087.bullx (10.100.148.184) 43337
+mars - INFO   - 20260616.151140 - Mars server is on 10.112.2.10 54909
+mars - INFO   - 20260616.151140 - Server task is 145 [marsode]
+mars - INFO   - 20260616.151140 - Request cost: 4 fields, 348.853 Mbytes on 1 tape, nodes: hpss, libraries: ibmlib08 [marsode]
+mars - INFO   - 20260616.151140 - The efficiency of your requests in the last 12 hours is 100% [marsode]
+mars - INFO   - 20260616.151239 - Transfering 365798511 bytes
+mars - INFO   - 20260616.151239 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 365798511
+mars - INFO   - 20260616.151244 - 1 ODB message retrieved from 'marsode'
+mars - WARN   - 20260616.151244 - Visiting database marsode : expected 0, got 1
+mars - INFO   - 20260616.151244 - Request time:  wall: 1 min 4 sec  cpu: 4 sec 
+mars - INFO   - 20260616.151244 -   Processing in marsode: wall: 59 sec 
+mars - INFO   - 20260616.151244 -   Visiting marsode: wall: 1 min 4 sec 
+mars - INFO   - 20260616.151244 - Memory used: 300.91 Mbyte(s)
+mars - INFO   - 20260616.151244 - No errors reported
+2024-04-04 | expID: 79
+mars - WARN - 
+mars - WARN - 
+MIR environment variables:
+MIR_CACHE_PATH={FILE?/ec/cache.1}/cache:{FILE?/ec/cache.2}/cache
+MIR_LSM_NAMED=1km.climate.v013
+Using MARS binary: /usr/local/apps/mars/versions/6.34.4.11/bin/mars.bin
+mars - INFO   - 20260616.151245 - Welcome to MARS
+mars - INFO   - 20260616.151245 - MARS_HOME=/usr/local/apps/mars/configs/prod
+mars - INFO   - 20260616.151245 - MARS Client build stamp: 20260421054856
+mars - INFO   - 20260616.151245 - MARS Client bundle version: 6.34.4.11
+mars - INFO   - 20260616.151245 - package mars-client version: 6.34.4
+mars - INFO   - 20260616.151245 - package mir version: 1.23.9
+mars - INFO   - 20260616.151245 - package odc version: 1.6.3
+mars - INFO   - 20260616.151245 - package fdb version: 5.21.1
+mars - INFO   - 20260616.151245 - package metkit version: 1.18.0
+mars - INFO   - 20260616.151245 - package eckit version: 2.0.7
+mars - INFO   - 20260616.151245 - package eccodes version: 2.46.3
+RETRIEVE,
+    STREAM=lwda,
+    CLASS=od,
+    EXPVER=79,
+    TYPE=OFB,
+    DATE=20240404,
+    TIME=00/12,
+    REPORTYPE=21009/21010,
+    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    TARGET=amsua_ofb_lwda_20240404_NH_SH_variables_filtered_lsm_lower02.odb
+
+
+mars - INFO   - 20260616.151245 - Processing request 1
+
+RETRIEVE,
+    CLASS      = OD,
+    TYPE       = OFB,
+    STREAM     = LWDA,
+    EXPVER     = 0079,
+    REPRES     = BU,
+    REPORTYPE  = 21009/21010,
+    OBSTYPE    = 1,
+    DATE       = 20240404,
+    TIME       = 0000/1200,
+    DOMAIN     = G,
+    TARGET     = amsua_ofb_lwda_20240404_NH_SH_variables_filtered_lsm_lower02.odb,
+    FILTER     = "select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    DUPLICATES = KEEP
+
+mars - INFO   - 20260616.151245 - Setting SO_SNDBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151245 - Current value is 8192 (8.00 K)
+mars - WARN   - 20260616.151245 - SO_SNDBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151245 - Setting SO_RCVBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151245 - Current value is 43690 (42.67 K)
+mars - WARN   - 20260616.151245 - SO_RCVBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151245 - Calling mars on 'marsod-core', local port is 33031
+mars - INFO   - 20260616.151245 - Callback at address 10.100.148.184, port 33031
+mars - INFO   - 20260616.151245 - Mars client is on ad1-2087.bullx (10.100.148.184) 33031
+mars - INFO   - 20260616.151245 - Mars server is on 10.112.5.10 56394
+mars - INFO   - 20260616.151245 - Server task is 9866 [marsod]
+mars - INFO   - 20260616.151245 - Request cost: 0 field,  [marsod]
+mars - INFO   - 20260616.151245 - The efficiency of your requests in the last 12 hours is 100% [marsod]
+mars - WARN   - 20260616.151245 - Data not found [marsod]
+mars - INFO   - 20260616.151245 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 0
+mars - INFO   - 20260616.151245 - Calling mars on 'marsode-core', local port is 49315
+mars - INFO   - 20260616.151245 - Callback at address 10.100.148.184, port 49315
+mars - INFO   - 20260616.151245 - Mars client is on ad1-2087.bullx (10.100.148.184) 49315
+mars - INFO   - 20260616.151245 - Mars server is on 10.112.2.10 50859
+mars - INFO   - 20260616.151245 - Server task is 145 [marsode]
+mars - INFO   - 20260616.151245 - Request cost: 4 fields, 340.282 Mbytes on 1 tape, nodes: hpss, libraries: ibmlib08 [marsode]
+mars - INFO   - 20260616.151245 - The efficiency of your requests in the last 12 hours is 100% [marsode]
+mars - INFO   - 20260616.151342 - Transfering 356811155 bytes
+mars - INFO   - 20260616.151342 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 356811155
+mars - INFO   - 20260616.151347 - 1 ODB message retrieved from 'marsode'
+mars - WARN   - 20260616.151347 - Visiting database marsode : expected 0, got 1
+mars - INFO   - 20260616.151347 - Request time:  wall: 1 min 2 sec  cpu: 4 sec 
+mars - INFO   - 20260616.151347 -   Processing in marsode: wall: 57 sec 
+mars - INFO   - 20260616.151347 -   Visiting marsode: wall: 1 min 2 sec 
+mars - INFO   - 20260616.151347 - Memory used: 283.20 Mbyte(s)
+mars - INFO   - 20260616.151347 - No errors reported
+2024-04-05 | expID: 79
+mars - WARN - 
+mars - WARN - 
+MIR environment variables:
+MIR_CACHE_PATH={FILE?/ec/cache.1}/cache:{FILE?/ec/cache.2}/cache
+MIR_LSM_NAMED=1km.climate.v013
+Using MARS binary: /usr/local/apps/mars/versions/6.34.4.11/bin/mars.bin
+mars - INFO   - 20260616.151347 - Welcome to MARS
+mars - INFO   - 20260616.151347 - MARS_HOME=/usr/local/apps/mars/configs/prod
+mars - INFO   - 20260616.151347 - MARS Client build stamp: 20260421054856
+mars - INFO   - 20260616.151347 - MARS Client bundle version: 6.34.4.11
+mars - INFO   - 20260616.151347 - package mars-client version: 6.34.4
+mars - INFO   - 20260616.151347 - package mir version: 1.23.9
+mars - INFO   - 20260616.151347 - package odc version: 1.6.3
+mars - INFO   - 20260616.151347 - package fdb version: 5.21.1
+mars - INFO   - 20260616.151347 - package metkit version: 1.18.0
+mars - INFO   - 20260616.151347 - package eckit version: 2.0.7
+mars - INFO   - 20260616.151347 - package eccodes version: 2.46.3
+RETRIEVE,
+    STREAM=lwda,
+    CLASS=od,
+    EXPVER=79,
+    TYPE=OFB,
+    DATE=20240405,
+    TIME=00/12,
+    REPORTYPE=21009/21010,
+    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    TARGET=amsua_ofb_lwda_20240405_NH_SH_variables_filtered_lsm_lower02.odb
+
+
+mars - INFO   - 20260616.151347 - Processing request 1
+
+RETRIEVE,
+    CLASS      = OD,
+    TYPE       = OFB,
+    STREAM     = LWDA,
+    EXPVER     = 0079,
+    REPRES     = BU,
+    REPORTYPE  = 21009/21010,
+    OBSTYPE    = 1,
+    DATE       = 20240405,
+    TIME       = 0000/1200,
+    DOMAIN     = G,
+    TARGET     = amsua_ofb_lwda_20240405_NH_SH_variables_filtered_lsm_lower02.odb,
+    FILTER     = "select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    DUPLICATES = KEEP
+
+mars - INFO   - 20260616.151347 - Setting SO_SNDBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151347 - Current value is 8192 (8.00 K)
+mars - WARN   - 20260616.151347 - SO_SNDBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151347 - Setting SO_RCVBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151347 - Current value is 43690 (42.67 K)
+mars - WARN   - 20260616.151347 - SO_RCVBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151347 - Calling mars on 'marsod-core', local port is 52977
+mars - INFO   - 20260616.151347 - Callback at address 10.100.148.184, port 52977
+mars - INFO   - 20260616.151347 - Mars client is on ad1-2087.bullx (10.100.148.184) 52977
+mars - INFO   - 20260616.151347 - Mars server is on 10.112.5.10 55050
+mars - INFO   - 20260616.151347 - Server task is 7921 [marsod]
+mars - INFO   - 20260616.151347 - Request cost: 0 field,  [marsod]
+mars - INFO   - 20260616.151347 - The efficiency of your requests in the last 12 hours is 100% [marsod]
+mars - WARN   - 20260616.151347 - Data not found [marsod]
+mars - INFO   - 20260616.151347 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 0
+mars - INFO   - 20260616.151347 - Calling mars on 'marsode-core', local port is 38533
+mars - INFO   - 20260616.151347 - Callback at address 10.100.148.184, port 38533
+mars - INFO   - 20260616.151347 - Mars client is on ad1-2087.bullx (10.100.148.184) 38533
+mars - INFO   - 20260616.151347 - Mars server is on 10.112.2.10 39574
+mars - INFO   - 20260616.151347 - Server task is 145 [marsode]
+mars - INFO   - 20260616.151347 - Request cost: 4 fields, 351.062 Mbytes on 1 tape, nodes: hpss, libraries: ibmlib08 [marsode]
+mars - INFO   - 20260616.151347 - The efficiency of your requests in the last 12 hours is 100% [marsode]
+mars - INFO   - 20260616.151422 - Transfering 368115162 bytes
+mars - INFO   - 20260616.151422 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 368115162
+mars - INFO   - 20260616.151426 - 1 ODB message retrieved from 'marsode'
+mars - WARN   - 20260616.151426 - Visiting database marsode : expected 0, got 1
+mars - INFO   - 20260616.151426 - Request time:  wall: 39 sec  cpu: 4 sec 
+mars - INFO   - 20260616.151426 -   Processing in marsode: wall: 34 sec 
+mars - INFO   - 20260616.151426 -   Visiting marsode: wall: 39 sec 
+mars - INFO   - 20260616.151426 - Memory used: 292.61 Mbyte(s)
+mars - INFO   - 20260616.151426 - No errors reported
+2024-04-06 | expID: 79
+mars - WARN - 
+mars - WARN - 
+MIR environment variables:
+MIR_CACHE_PATH={FILE?/ec/cache.1}/cache:{FILE?/ec/cache.2}/cache
+MIR_LSM_NAMED=1km.climate.v013
+Using MARS binary: /usr/local/apps/mars/versions/6.34.4.11/bin/mars.bin
+mars - INFO   - 20260616.151427 - Welcome to MARS
+mars - INFO   - 20260616.151427 - MARS_HOME=/usr/local/apps/mars/configs/prod
+mars - INFO   - 20260616.151427 - MARS Client build stamp: 20260421054856
+mars - INFO   - 20260616.151427 - MARS Client bundle version: 6.34.4.11
+mars - INFO   - 20260616.151427 - package mars-client version: 6.34.4
+mars - INFO   - 20260616.151427 - package mir version: 1.23.9
+mars - INFO   - 20260616.151427 - package odc version: 1.6.3
+mars - INFO   - 20260616.151427 - package fdb version: 5.21.1
+mars - INFO   - 20260616.151427 - package metkit version: 1.18.0
+mars - INFO   - 20260616.151427 - package eckit version: 2.0.7
+mars - INFO   - 20260616.151427 - package eccodes version: 2.46.3
+RETRIEVE,
+    STREAM=lwda,
+    CLASS=od,
+    EXPVER=79,
+    TYPE=OFB,
+    DATE=20240406,
+    TIME=00/12,
+    REPORTYPE=21009/21010,
+    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    TARGET=amsua_ofb_lwda_20240406_NH_SH_variables_filtered_lsm_lower02.odb
+
+
+mars - INFO   - 20260616.151427 - Processing request 1
+
+RETRIEVE,
+    CLASS      = OD,
+    TYPE       = OFB,
+    STREAM     = LWDA,
+    EXPVER     = 0079,
+    REPRES     = BU,
+    REPORTYPE  = 21009/21010,
+    OBSTYPE    = 1,
+    DATE       = 20240406,
+    TIME       = 0000/1200,
+    DOMAIN     = G,
+    TARGET     = amsua_ofb_lwda_20240406_NH_SH_variables_filtered_lsm_lower02.odb,
+    FILTER     = "select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    DUPLICATES = KEEP
+
+mars - INFO   - 20260616.151427 - Setting SO_SNDBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151427 - Current value is 8192 (8.00 K)
+mars - WARN   - 20260616.151427 - SO_SNDBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151427 - Setting SO_RCVBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151427 - Current value is 43690 (42.67 K)
+mars - WARN   - 20260616.151427 - SO_RCVBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151427 - Calling mars on 'marsod-core', local port is 41601
+mars - INFO   - 20260616.151427 - Callback at address 10.100.148.184, port 41601
+mars - INFO   - 20260616.151427 - Mars client is on ad1-2087.bullx (10.100.148.184) 41601
+mars - INFO   - 20260616.151427 - Mars server is on 10.112.5.10 54899
+mars - INFO   - 20260616.151427 - Server task is 1670 [marsod]
+mars - INFO   - 20260616.151427 - Request cost: 0 field,  [marsod]
+mars - INFO   - 20260616.151427 - The efficiency of your requests in the last 12 hours is 100% [marsod]
+mars - WARN   - 20260616.151427 - Data not found [marsod]
+mars - INFO   - 20260616.151427 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 0
+mars - INFO   - 20260616.151427 - Calling mars on 'marsode-core', local port is 59141
+mars - INFO   - 20260616.151427 - Callback at address 10.100.148.184, port 59141
+mars - INFO   - 20260616.151427 - Mars client is on ad1-2087.bullx (10.100.148.184) 59141
+mars - INFO   - 20260616.151427 - Mars server is on 10.112.2.10 45154
+mars - INFO   - 20260616.151427 - Server task is 145 [marsode]
+mars - INFO   - 20260616.151427 - Request cost: 4 fields, 356.246 Mbytes on 1 tape, nodes: hpss, libraries: ibmlib08 [marsode]
+mars - INFO   - 20260616.151427 - The efficiency of your requests in the last 12 hours is 100% [marsode]
+mars - INFO   - 20260616.151523 - Transfering 373550749 bytes
+mars - INFO   - 20260616.151523 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 373550749
+mars - INFO   - 20260616.151528 - 1 ODB message retrieved from 'marsode'
+mars - WARN   - 20260616.151528 - Visiting database marsode : expected 0, got 1
+mars - INFO   - 20260616.151528 - Request time:  wall: 1 min 1 sec  cpu: 4 sec 
+mars - INFO   - 20260616.151528 -   Processing in marsode: wall: 56 sec 
+mars - INFO   - 20260616.151528 -   Visiting marsode: wall: 1 min 1 sec 
+mars - INFO   - 20260616.151528 - Memory used: 287.50 Mbyte(s)
+mars - INFO   - 20260616.151528 - No errors reported
+2024-04-07 | expID: 79
+mars - WARN - 
+mars - WARN - 
+MIR environment variables:
+MIR_CACHE_PATH={FILE?/ec/cache.1}/cache:{FILE?/ec/cache.2}/cache
+MIR_LSM_NAMED=1km.climate.v013
+Using MARS binary: /usr/local/apps/mars/versions/6.34.4.11/bin/mars.bin
+mars - INFO   - 20260616.151528 - Welcome to MARS
+mars - INFO   - 20260616.151528 - MARS_HOME=/usr/local/apps/mars/configs/prod
+mars - INFO   - 20260616.151528 - MARS Client build stamp: 20260421054856
+mars - INFO   - 20260616.151528 - MARS Client bundle version: 6.34.4.11
+mars - INFO   - 20260616.151528 - package mars-client version: 6.34.4
+mars - INFO   - 20260616.151528 - package mir version: 1.23.9
+mars - INFO   - 20260616.151528 - package odc version: 1.6.3
+mars - INFO   - 20260616.151528 - package fdb version: 5.21.1
+mars - INFO   - 20260616.151528 - package metkit version: 1.18.0
+mars - INFO   - 20260616.151528 - package eckit version: 2.0.7
+mars - INFO   - 20260616.151528 - package eccodes version: 2.46.3
+RETRIEVE,
+    STREAM=lwda,
+    CLASS=od,
+    EXPVER=79,
+    TYPE=OFB,
+    DATE=20240407,
+    TIME=00/12,
+    REPORTYPE=21009/21010,
+    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    TARGET=amsua_ofb_lwda_20240407_NH_SH_variables_filtered_lsm_lower02.odb
+
+
+mars - INFO   - 20260616.151528 - Processing request 1
+
+RETRIEVE,
+    CLASS      = OD,
+    TYPE       = OFB,
+    STREAM     = LWDA,
+    EXPVER     = 0079,
+    REPRES     = BU,
+    REPORTYPE  = 21009/21010,
+    OBSTYPE    = 1,
+    DATE       = 20240407,
+    TIME       = 0000/1200,
+    DOMAIN     = G,
+    TARGET     = amsua_ofb_lwda_20240407_NH_SH_variables_filtered_lsm_lower02.odb,
+    FILTER     = "select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    DUPLICATES = KEEP
+
+mars - INFO   - 20260616.151528 - Setting SO_SNDBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151528 - Current value is 8192 (8.00 K)
+mars - WARN   - 20260616.151528 - SO_SNDBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151528 - Setting SO_RCVBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151528 - Current value is 43690 (42.67 K)
+mars - WARN   - 20260616.151528 - SO_RCVBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151528 - Calling mars on 'marsod-core', local port is 37643
+mars - INFO   - 20260616.151528 - Callback at address 10.100.148.184, port 37643
+mars - INFO   - 20260616.151528 - Mars client is on ad1-2087.bullx (10.100.148.184) 37643
+mars - INFO   - 20260616.151528 - Mars server is on 10.112.5.10 46893
+mars - INFO   - 20260616.151528 - Server task is 2367 [marsod]
+mars - INFO   - 20260616.151528 - Request cost: 0 field,  [marsod]
+mars - INFO   - 20260616.151528 - The efficiency of your requests in the last 12 hours is 100% [marsod]
+mars - WARN   - 20260616.151528 - Data not found [marsod]
+mars - INFO   - 20260616.151528 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 0
+mars - INFO   - 20260616.151528 - Calling mars on 'marsode-core', local port is 40597
+mars - INFO   - 20260616.151528 - Callback at address 10.100.148.184, port 40597
+mars - INFO   - 20260616.151528 - Mars client is on ad1-2087.bullx (10.100.148.184) 40597
+mars - INFO   - 20260616.151528 - Mars server is on 10.112.2.10 36360
+mars - INFO   - 20260616.151528 - Server task is 145 [marsode]
+mars - INFO   - 20260616.151528 - Request cost: 4 fields, 354.136 Mbytes on 1 tape, nodes: hpss, libraries: ibmlib08 [marsode]
+mars - INFO   - 20260616.151528 - The efficiency of your requests in the last 12 hours is 100% [marsode]
+mars - INFO   - 20260616.151622 - Transfering 371338990 bytes
+mars - INFO   - 20260616.151622 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 371338990
+mars - INFO   - 20260616.151627 - 1 ODB message retrieved from 'marsode'
+mars - WARN   - 20260616.151627 - Visiting database marsode : expected 0, got 1
+mars - INFO   - 20260616.151627 - Request time:  wall: 59 sec  cpu: 4 sec 
+mars - INFO   - 20260616.151627 -   Processing in marsode: wall: 54 sec 
+mars - INFO   - 20260616.151627 -   Visiting marsode: wall: 59 sec 
+mars - INFO   - 20260616.151627 - Memory used: 294.58 Mbyte(s)
+mars - INFO   - 20260616.151627 - No errors reported
+2024-04-08 | expID: 79
+mars - WARN - 
+mars - WARN - 
+MIR environment variables:
+MIR_CACHE_PATH={FILE?/ec/cache.1}/cache:{FILE?/ec/cache.2}/cache
+MIR_LSM_NAMED=1km.climate.v013
+Using MARS binary: /usr/local/apps/mars/versions/6.34.4.11/bin/mars.bin
+mars - INFO   - 20260616.151628 - Welcome to MARS
+mars - INFO   - 20260616.151628 - MARS_HOME=/usr/local/apps/mars/configs/prod
+mars - INFO   - 20260616.151628 - MARS Client build stamp: 20260421054856
+mars - INFO   - 20260616.151628 - MARS Client bundle version: 6.34.4.11
+mars - INFO   - 20260616.151628 - package mars-client version: 6.34.4
+mars - INFO   - 20260616.151628 - package mir version: 1.23.9
+mars - INFO   - 20260616.151628 - package odc version: 1.6.3
+mars - INFO   - 20260616.151628 - package fdb version: 5.21.1
+mars - INFO   - 20260616.151628 - package metkit version: 1.18.0
+mars - INFO   - 20260616.151628 - package eckit version: 2.0.7
+mars - INFO   - 20260616.151628 - package eccodes version: 2.46.3
+RETRIEVE,
+    STREAM=lwda,
+    CLASS=od,
+    EXPVER=79,
+    TYPE=OFB,
+    DATE=20240408,
+    TIME=00/12,
+    REPORTYPE=21009/21010,
+    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    TARGET=amsua_ofb_lwda_20240408_NH_SH_variables_filtered_lsm_lower02.odb
+
+
+mars - INFO   - 20260616.151628 - Processing request 1
+
+RETRIEVE,
+    CLASS      = OD,
+    TYPE       = OFB,
+    STREAM     = LWDA,
+    EXPVER     = 0079,
+    REPRES     = BU,
+    REPORTYPE  = 21009/21010,
+    OBSTYPE    = 1,
+    DATE       = 20240408,
+    TIME       = 0000/1200,
+    DOMAIN     = G,
+    TARGET     = amsua_ofb_lwda_20240408_NH_SH_variables_filtered_lsm_lower02.odb,
+    FILTER     = "select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)",
+    DUPLICATES = KEEP
+
+mars - INFO   - 20260616.151628 - Setting SO_SNDBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151628 - Current value is 8192 (8.00 K)
+mars - WARN   - 20260616.151628 - SO_SNDBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151628 - Setting SO_RCVBUF to 33554432 (32.00 M)
+mars - INFO   - 20260616.151628 - Current value is 43690 (42.67 K)
+mars - WARN   - 20260616.151628 - SO_RCVBUF limited by kernel to 212992 (208.00 K)
+mars - INFO   - 20260616.151628 - Calling mars on 'marsod-core', local port is 54437
+mars - INFO   - 20260616.151628 - Callback at address 10.100.148.184, port 54437
+mars - INFO   - 20260616.151628 - Mars client is on ad1-2087.bullx (10.100.148.184) 54437
+mars - INFO   - 20260616.151628 - Mars server is on 10.112.5.10 42309
+mars - INFO   - 20260616.151628 - Server task is 9866 [marsod]
+mars - INFO   - 20260616.151628 - Request cost: 0 field,  [marsod]
+mars - INFO   - 20260616.151628 - The efficiency of your requests in the last 12 hours is 100% [marsod]
+mars - WARN   - 20260616.151628 - Data not found [marsod]
+mars - INFO   - 20260616.151628 - odb_filter: sql = '"select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 50 or lat<-50)"', total_to_read = 0
+mars - INFO   - 20260616.151628 - Calling mars on 'marsode-core', local port is 47351
+mars - INFO   - 20260616.151628 - Callback at address 10.100.148.184, port 47351
+mars - INFO   - 20260616.151628 - Mars client is on ad1-2087.bullx (10.100.148.184) 47351
+mars - INFO   - 20260616.151628 - Mars server is on 10.112.2.10 46150
+mars - INFO   - 20260616.151628 - Server task is 145 [marsode]
+mars - INFO   - 20260616.151628 - Request cost: 4 fields, 330.196 Mbytes on 1 tape, nodes: hpss, libraries: ibmlib08 [marsode]
+mars - INFO   - 20260616.151628 - The efficiency of your requests in the last 12 hours is 100% [marsode]
