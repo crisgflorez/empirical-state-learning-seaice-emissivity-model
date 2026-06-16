@@ -1,0 +1,45 @@
+[ECMWF-INFO -ecprofile] /usr/bin/bash NON_INTERACTIVE on ab6-135 at 20260119_150236.779, PID: 1701127, JOBID: 25370274
+[ECMWF-INFO -ecprofile] $SCRATCH=/ec/res4/scratch/dnk8355
+[ECMWF-INFO -ecprofile] $PERM=/perm/dnk8355
+[ECMWF-INFO -ecprofile] $HPCPERM=/ec/res4/hpcperm/dnk8355
+[ECMWF-INFO -ecprofile] $TMPDIR=/etc/ecmwf/ssd/ssd1/tmpdirs/dnk8355.25370274
+[ECMWF-INFO -ecprofile] $SCRATCHDIR=/ec/res4/scratchdir/dnk8355/2/25370274
+2026-01-19 15:02:38.545518: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-01-19 15:02:38.849082: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/apps/aifs-compo-single/0.1.0/env/lib/python3.12/site-packages/eccodeslib/lib64:
+2026-01-19 15:02:38.849123: I tensorflow/compiler/xla/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2026-01-19 15:02:40.030123: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/apps/aifs-compo-single/0.1.0/env/lib/python3.12/site-packages/eccodeslib/lib64:
+2026-01-19 15:02:40.030775: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/apps/aifs-compo-single/0.1.0/env/lib/python3.12/site-packages/eccodeslib/lib64:
+2026-01-19 15:02:40.030785: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+2026-01-19 15:02:48.813415: E tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:267] failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+2026-01-19 15:02:48.813641: I tensorflow/compiler/xla/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (ab6-135.bullx): /proc/driver/nvidia/version does not exist
+2026-01-19 15:02:48.814142: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+slurmstepd: error: *** JOB 25370274 ON ab6-135 CANCELLED AT 2026-01-19T15:12:08 ***
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] This is the ECMWF job Epilogue
+[ECMWF-INFO -ecepilog] +++ Please report issues using the Support portal +++
+[ECMWF-INFO -ecepilog] +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] Run at 2026-01-19T15:12:08 on ab
+[ECMWF-INFO -ecepilog] JobName                   : seaice_finalV2
+[ECMWF-INFO -ecepilog] JobID                     : 25370274
+[ECMWF-INFO -ecepilog] Submit                    : 2026-01-19T15:02:29
+[ECMWF-INFO -ecepilog] Start                     : 2026-01-19T15:02:34
+[ECMWF-INFO -ecepilog] End                       : 2026-01-19T15:12:08
+[ECMWF-INFO -ecepilog] QueuedTime                : 5.0
+[ECMWF-INFO -ecepilog] ElapsedRaw                : 574
+[ECMWF-INFO -ecepilog] ExitCode                  : 0:0
+[ECMWF-INFO -ecepilog] DerivedExitCode           : 0:0
+[ECMWF-INFO -ecepilog] State                     : CANCELLED by 27772
+[ECMWF-INFO -ecepilog] Account                   : dkhirlam
+[ECMWF-INFO -ecepilog] QOS                       : nf
+[ECMWF-INFO -ecepilog] User                      : dnk8355
+[ECMWF-INFO -ecepilog] StdOut                    : /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_bg_emis07_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_1025370274.out
+[ECMWF-INFO -ecepilog] StdErr                    : /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_bg_emis07_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_1025370274.err
+[ECMWF-INFO -ecepilog] NNodes                    : 1
+[ECMWF-INFO -ecepilog] NCPUS                     : 2
+[ECMWF-INFO -ecepilog] SBU                       : 2.721
+[ECMWF-INFO -ecepilog] jobtag                    : dnk8355-seaice_finalV2-1x2-/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_bg_emis07_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3__JOBID_.out
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+

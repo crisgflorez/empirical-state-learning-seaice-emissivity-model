@@ -1,0 +1,50 @@
+[ECMWF-INFO -sbatch] - -------------------------------------------------------------------------------------
+[ECMWF-INFO -sbatch] -  This is the ECMWF jobfilter
+[ECMWF-INFO -sbatch] -  +++ Please report issues using the Support portal +++
+[ECMWF-INFO -sbatch] -  +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -sbatch] -  /usr/local/bin/ecsbatch: size: 53801, mtime: Tue Nov 25 12:31:30 2025
+[ECMWF-INFO -sbatch] - -------------------------------------------------------------------------------------
+[ECMWF-INFO -sbatch] - Time at submit: Tue Jan 20 13:56:58 2026 (1768917418.6039436) on ac6-198.bullx:/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model
+[ECMWF-INFO -sbatch] - --- SLURM VARIABLES ---
+[ECMWF-INFO -sbatch] - EC_CLUSTER=ac
+[ECMWF-INFO -sbatch] - SLURM_EXPORT_ENV=ALL
+[ECMWF-INFO -sbatch] - SLURM_JOB_ID=36055265
+[ECMWF-INFO -sbatch] - SBATCH_EXPORT=NONE
+[ECMWF-INFO -sbatch] - -----------------------
+[ECMWF-INFO -sbatch] - jobscript: /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatch_final_v2.sh
+[ECMWF-INFO -sbatch] - --- SCRIPT OPTIONS ---
+[ECMWF-INFO -sbatch] - #SBATCH --qos=nf
+[ECMWF-INFO -sbatch] - #SBATCH --time=24:00:00
+[ECMWF-INFO -sbatch] - #SBATCH --nodes=1
+[ECMWF-INFO -sbatch] - #SBATCH --ntasks=1
+[ECMWF-INFO -sbatch] - #SBATCH --job-name=seaice_finalV2
+[ECMWF-INFO -sbatch] - #SBATCH -o sbatchlogs/seaiceV2_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10%j.out
+[ECMWF-INFO -sbatch] - #SBATCH -e sbatchlogs/seaiceV2_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10%j.err
+[ECMWF-INFO -sbatch] - -----------------------
+[ECMWF-INFO -sbatch] - --- POST-PROCESSED OPTIONS ---
+[ECMWF-INFO -sbatch] - ARG --positional=['sbatch_final_v2.sh']
+[ECMWF-INFO -sbatch] - ARG --error=sbatchlogs/seaiceV2_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10%j.err
+[ECMWF-INFO -sbatch] - ARG --job_name=seaice_finalV2
+[ECMWF-INFO -sbatch] - ARG --ntasks=1
+[ECMWF-INFO -sbatch] - ARG --nodes=1
+[ECMWF-INFO -sbatch] - ARG --output=sbatchlogs/seaiceV2_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10%j.out
+[ECMWF-INFO -sbatch] - ARG --qos=nf
+[ECMWF-INFO -sbatch] - ARG --time=24:00:00
+[ECMWF-INFO -sbatch] - ------------------------------
+[ECMWF-INFO -sbatch] - jobtag: dnk8355-seaice_finalV2-1x2-/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10_JOBID_.out
+[ECMWF-INFO -sbatch] - ['/usr/bin/sbatch', '--error=sbatchlogs/seaiceV2_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10%j.err', '--job-name=seaice_finalV2', '--ntasks=1', '--nodes=1', '--output=sbatchlogs/seaiceV2_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10%j.out', '--qos=nf', '--time=24:00:00', '--licenses=h2resw01', '--export=EC_user_time_limit=24:00:00', '/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatch_final_v2.sh']
+[ECMWF-INFO -sbatch] - sbatch executed on ac
+[ECMWF-INFO -sbatch] - Job queued on ac using method local
+[ECMWF-INFO -sbatch] - Submitted batch job 36174754
+starting seaice_training.py ....
+Using sensor METOP-B ['24v', '37v', '50v', '53v']
+Unified channel basis: ['24v' '37v' '50v' '53v']
+METOP-B channel map: [0 1 2 3]
+Final unified obs_error: [4.5 5.  5.  2. ]
+Indexing METOP-B
+    Number of obs: 2533103
+Total nobs: 2533103
+Number of inputs per obs: 37
+Number of channels: 4
+Loading METOP-B
+Training data generated

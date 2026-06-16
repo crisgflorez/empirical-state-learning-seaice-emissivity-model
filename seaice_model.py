@@ -14,8 +14,13 @@ import numpy as np
 import xarray as xr
 import seaice_layers
 import os
+import pandas as pd
 
-julian_day_attrs = {'units':'days since -4714-11-24 12:00:00.000','calendar':'proleptic_gregorian'}
+#julian_day_attrs = {'units':'days since -4714-11-24 12:00:00.000','calendar':'proleptic_gregorian'} This has been changed to put in the netcdf files the correct date and time
+julian_day_attrs = {'long_name': 'Astronomical Julian Day',
+            'standard_name': 'julian_day',
+            'description': 'Continuous astronomical Julian Day starting at 4713 BCE-01-01 12:00 UTC'
+        }
 
 class SeaiceModel:
     """
@@ -132,7 +137,7 @@ class SeaiceModel:
         augmented_y = tf.stack([bias_corrected_tb,bias_corrected_tb],axis=2)
         self.outputs = augmented_y  
 
-    def save(self, history, fappend, outpath):
+    def save(self, history, fappend, outpath, callback):
         """
         Save the sea ice model details to disk
         """
@@ -192,9 +197,34 @@ class SeaiceModel:
                             coords={"channel":channel})
         da2['tb_bias'] = xr.DataArray(data=self.bias_layer.weights[0],dims=("biases","sensors","channel"),
                             coords={"channel":channel,"sensors":sensors,"biases":biases})
+        # Save epoch-level losses
         for key, value in history.history.items():
             da2[key] = xr.DataArray(data=value,dims=("epoch"),coords={"epoch":epoch})
         
+        # Save batch-level losses
+        batch_losses = callback.batch_losses  # dict with lists per epoch
+        # Nb of epochs 
+        n_epochs = len(next(iter(batch_losses.values())))
+
+        # Max number of batches in any epoch
+        max_batches = max(len(epoch_list) for epoch_list in batch_losses['loss'])
+
+        # Create a matrix epoch x batch for each loss type
+        for key, epoch_lists in batch_losses.items():
+            # Matrix to hold the loss values, initialized with NaNs
+            loss_matrix = np.full((n_epochs, max_batches), np.nan)
+
+            # Fill the matrix with actual loss values
+            for e, batch_list in enumerate(epoch_lists):
+                loss_matrix[e, :len(batch_list)] = batch_list
+
+            # Save to xarray DataArray
+            da2[key + "_per_batch"] = xr.DataArray(
+                data=loss_matrix,
+                dims=("epoch", "batch"),
+                coords={"epoch": np.arange(n_epochs), "batch": np.arange(max_batches)}
+            )
+
         da2.to_netcdf(outpath+'models_'+filename_append)
 
         da3=xr.Dataset()
@@ -483,6 +513,9 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     da['istep'] = xr.DataArray(data=x0[:,2].astype(np.int32),dims=("iobs"))
     da['isensor'] = xr.DataArray(data=x0[:,6].astype(np.int32),dims=("iobs"))
     da['channel_name'] = xr.DataArray(channel_names,dims=("channel"))
+    datetime_fromjulianday = pd.to_datetime(geolocation['julian_day'],origin='julian',unit='D')
+    da['date_time_fromjd'] = xr.DataArray(datetime_fromjulianday.values,dims='iobs',
+    attrs={'standard_name': 'datetime','long_name': 'Datetime converted from astronomical Julian Day'})
     da.to_netcdf(outdir+'tbobs_'+fappend+'.nc')
     da.close()
 
@@ -578,8 +611,15 @@ def save_model_outputs(model_tb_list, geolocation, fname, channel_names, varname
 
     da = xr.Dataset()
     da[varname] = xr.DataArray(data=tbout,dims=("iobs","channel"),coords={"iobs":iobs,"channel":channel})
-    julian_day_attrs = {'units':'days since -4714-11-24 12:00:00.000','calendar':'proleptic_gregorian'}
+    #julian_day_attrs = {'units':'days since -4714-11-24 12:00:00.000','calendar':'proleptic_gregorian'}
+    julian_day_attrs = {'long_name': 'Astronomical Julian Day',
+            'standard_name': 'julian_day',
+            'description': 'Continuous astronomical Julian Day starting at 4713 BCE-01-01 12:00 UTC'
+        }
     append_geolocation_in_obs_space(geolocation, da, julian_day_attrs)
+    datetime_fromjulianday = pd.to_datetime(geolocation['julian_day'],origin='julian',unit='D')
+    da['date_time_fromjd'] = xr.DataArray(datetime_fromjulianday.values,dims='iobs',
+    attrs={'standard_name': 'datetime','long_name': 'Datetime converted from astronomical Julian Day'})
     da['channel_name'] = xr.DataArray(channel_names,dims=("channel"))
     da.to_netcdf(fname)
 
@@ -587,3 +627,6 @@ def append_geolocation_in_obs_space(geolocation, dataset,julian_day_attrs):
     dataset['lon'] = xr.DataArray(data=geolocation['lon'],dims=("iobs"))
     dataset['lat'] = xr.DataArray(data=geolocation['lat'],dims=("iobs"))
     dataset['julian_day'] = xr.DataArray(data=geolocation['julian_day'],dims=("iobs"),attrs=julian_day_attrs)
+
+
+

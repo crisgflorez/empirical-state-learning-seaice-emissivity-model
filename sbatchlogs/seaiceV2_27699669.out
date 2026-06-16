@@ -1,0 +1,205 @@
+[ECMWF-INFO -sbatch] - -------------------------------------------------------------------------------------
+[ECMWF-INFO -sbatch] -  This is the ECMWF jobfilter
+[ECMWF-INFO -sbatch] -  +++ Please report issues using the Support portal +++
+[ECMWF-INFO -sbatch] -  +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -sbatch] -  /usr/local/bin/ecsbatch: size: 53801, mtime: Tue Nov 25 12:35:33 2025
+[ECMWF-INFO -sbatch] - -------------------------------------------------------------------------------------
+[ECMWF-INFO -sbatch] - Time at submit: Wed Dec 10 14:35:57 2025 (1765377357.1339576) on ab6-198.bullx:/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model
+[ECMWF-INFO -sbatch] - --- SLURM VARIABLES ---
+[ECMWF-INFO -sbatch] - EC_CLUSTER=ab
+[ECMWF-INFO -sbatch] - SLURM_EXPORT_ENV=ALL
+[ECMWF-INFO -sbatch] - SLURM_JOB_ID=27662859
+[ECMWF-INFO -sbatch] - SBATCH_EXPORT=NONE
+[ECMWF-INFO -sbatch] - -----------------------
+[ECMWF-INFO -sbatch] - jobscript: /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatch_final_v2.sh
+[ECMWF-INFO -sbatch] - --- SCRIPT OPTIONS ---
+[ECMWF-INFO -sbatch] - #SBATCH --qos=nf
+[ECMWF-INFO -sbatch] - #SBATCH --time=24:00:00
+[ECMWF-INFO -sbatch] - #SBATCH --nodes=1
+[ECMWF-INFO -sbatch] - #SBATCH --ntasks=1
+[ECMWF-INFO -sbatch] - #SBATCH --job-name=seaice_finalV2
+[ECMWF-INFO -sbatch] - #SBATCH -o sbatchlogs/seaiceV2_%j.out
+[ECMWF-INFO -sbatch] - #SBATCH -e sbatchlogs/seaiceV2_%j.err
+[ECMWF-INFO -sbatch] - -----------------------
+[ECMWF-INFO -sbatch] - --- POST-PROCESSED OPTIONS ---
+[ECMWF-INFO -sbatch] - ARG --positional=['./sbatch_final_v2.sh']
+[ECMWF-INFO -sbatch] - ARG --error=sbatchlogs/seaiceV2_%j.err
+[ECMWF-INFO -sbatch] - ARG --job_name=seaice_finalV2
+[ECMWF-INFO -sbatch] - ARG --ntasks=1
+[ECMWF-INFO -sbatch] - ARG --nodes=1
+[ECMWF-INFO -sbatch] - ARG --output=sbatchlogs/seaiceV2_%j.out
+[ECMWF-INFO -sbatch] - ARG --qos=nf
+[ECMWF-INFO -sbatch] - ARG --time=24:00:00
+[ECMWF-INFO -sbatch] - ------------------------------
+[ECMWF-INFO -sbatch] - jobtag: dnk8355-seaice_finalV2-1x2-/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2__JOBID_.out
+[ECMWF-INFO -sbatch] - ------------------------------
+[ECMWF-INFO -sbatch] - Average Walltime 600 with a Standard Deviation 592
+[ECMWF-INFO -sbatch] - Runtime history
+[ECMWF-INFO -sbatch] -   Date               | Cores   Cluster   Walltime       Mem
+[ECMWF-INFO -sbatch] -   08.12.2025 - 10:44 | 2          ad         1192       8000M     
+[ECMWF-INFO -sbatch] -   08.10.2025 - 14:13 | 2          ab         9          8000M     
+[ECMWF-INFO -sbatch] - ['/usr/bin/sbatch', '--error=sbatchlogs/seaiceV2_%j.err', '--job-name=seaice_finalV2', '--ntasks=1', '--nodes=1', '--output=sbatchlogs/seaiceV2_%j.out', '--qos=nf', '--time=24:00:00', '--licenses=h2resw01', '--export=EC_user_time_limit=24:00:00', '/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatch_final_v2.sh']
+[ECMWF-INFO -sbatch] - sbatch executed on ab
+[ECMWF-INFO -sbatch] - Job queued on ab using method local
+[ECMWF-INFO -sbatch] - Submitted batch job 27699669
+starting seaice_training.py ....
+Using sensor METOP-B ['24v', '37v', '50v', '53v']
+Unified channel basis: ['24v' '37v' '50v' '53v']
+METOP-B channel map: [0 1 2 3]
+Final unified obs_error: [4.5 5.  5.  2. ]
+Indexing METOP-B
+    Number of obs: 2533103
+Total nobs: 2533103
+Number of inputs per obs: 37
+Number of channels: 4
+Loading METOP-B
+Training data generated
+Emis bg error 1e-05
+Emis background 0.7
+Seaice fraction bg error 0.002
+Seaice fraction alpha ListWrapper([0.6, 0.4])
+Seaice fraction nobs 2533103
+Use seaice background loss False
+Use seaice PDF loss True
+Use seaice Tsfc loss True
+Bias correction bg error ListWrapper([1.0])
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ input_1 (InputLayer)           [(None, 37)]         0           []                               
+                                                                                                  
+ tf.__operators__.getitem_1 (Sl  (None, 2)           0           ['input_1[0][0]']                
+ icingOpLambda)                                                                                   
+                                                                                                  
+ input_2 (InputLayer)           [(None, 1)]          0           []                               
+                                                                                                  
+ tf.cast (TFOpLambda)           (None, 2)            0           ['tf.__operators__.getitem_1[0][0
+                                                                 ]']                              
+                                                                                                  
+ tf.__operators__.getitem_5 (Sl  (None,)             0           ['input_2[0][0]']                
+ icingOpLambda)                                                                                   
+                                                                                                  
+ ice_property_grid (IceProperty  (None, 2)           1811860     ['tf.cast[0][0]']                
+ Grid)                                                                                            
+                                                                                                  
+ ice_property_obs_space (IcePro  (None, 1)           2533103     ['tf.__operators__.getitem_5[0][0
+ pertyObsSpace)                                                  ]']                              
+                                                                                                  
+ tf.__operators__.getitem_6 (Sl  (None,)             0           ['input_1[0][0]']                
+ icingOpLambda)                                                                                   
+                                                                                                  
+ tf.__operators__.getitem_2 (Sl  (None,)             0           ['input_1[0][0]']                
+ icingOpLambda)                                                                                   
+                                                                                                  
+ tf.__operators__.getitem_3 (Sl  (None,)             0           ['input_1[0][0]']                
+ icingOpLambda)                                                                                   
+                                                                                                  
+ tf.__operators__.getitem_8 (Sl  (None, 4)           0           ['input_1[0][0]']                
+ icingOpLambda)                                                                                   
+                                                                                                  
+ tf.__operators__.getitem (Slic  (None,)             0           ['input_1[0][0]']                
+ ingOpLambda)                                                                                     
+                                                                                                  
+ tf.concat (TFOpLambda)         (None, 3)            0           ['ice_property_grid[0][0]',      
+                                                                  'ice_property_obs_space[0][0]'] 
+                                                                                                  
+ tf.cast_1 (TFOpLambda)         (None,)              0           ['tf.__operators__.getitem_6[0][0
+                                                                 ]']                              
+                                                                                                  
+ input_3 (InputLayer)           [(None, 4)]          0           []                               
+                                                                                                  
+ input_4 (InputLayer)           [(None, 4)]          0           []                               
+                                                                                                  
+ tf.__operators__.getitem_4 (Sl  (None,)             0           ['input_1[0][0]']                
+ icingOpLambda)                                                                                   
+                                                                                                  
+ seaice_fraction (SeaiceFractio  (None,)             1814342     ['tf.cast[0][0]',                
+ n)                                                               'tf.__operators__.getitem_2[0][0
+                                                                 ]']                              
+                                                                                                  
+ ocean_emis (OceanEmis)         (None, 4)            4           ['tf.__operators__.getitem_3[0][0
+                                                                 ]',                              
+                                                                  'tf.__operators__.getitem_8[0][0
+                                                                 ]']                              
+                                                                                                  
+ seaice_emis_nn (SeaiceEmisNN)  (None, 4)            58          ['tf.__operators__.getitem[0][0]'
+                                                                 , 'tf.concat[0][0]',             
+                                                                  'tf.cast_1[0][0]',              
+                                                                  'input_3[0][0]',                
+                                                                  'input_4[0][0]']                
+                                                                                                  
+ surface_radiation_terms (Surfa  ((None, 4),         0           ['seaice_fraction[0][0]',        
+ ceRadiationTerms)               (None, 4))                       'ocean_emis[0][0]',             
+                                                                  'seaice_emis_nn[0][0]',         
+                                                                  'tf.__operators__.getitem_2[0][0
+                                                                 ]']                              
+                                                                                                  
+ tf.__operators__.getitem_12 (S  (None, 4)           0           ['input_1[0][0]']                
+ licingOpLambda)                                                                                  
+                                                                                                  
+ tf.__operators__.getitem_13 (S  (None, 4)           0           ['input_1[0][0]']                
+ licingOpLambda)                                                                                  
+                                                                                                  
+ tf.__operators__.getitem_14 (S  (None, 4)           0           ['input_1[0][0]']                
+ licingOpLambda)                                                                                  
+                                                                                                  
+ tf.tensordot_1 (TFOpLambda)    (None, 4)            0           ['tf.__operators__.getitem_4[0][0
+                                                                 ]']                              
+                                                                                                  
+ tf.__operators__.getitem_9 (Sl  (None, 4)           0           ['input_1[0][0]']                
+ icingOpLambda)                                                                                   
+                                                                                                  
+ tf.__operators__.getitem_10 (S  (None, 4)           0           ['input_1[0][0]']                
+ licingOpLambda)                                                                                  
+                                                                                                  
+ tf.__operators__.getitem_11 (S  (None, 4)           0           ['input_1[0][0]']                
+ licingOpLambda)                                                                                  
+                                                                                                  
+ tf.tensordot (TFOpLambda)      (None, 4)            0           ['tf.__operators__.getitem_4[0][0
+                                                                 ]']                              
+                                                                                                  
+ specular_1 (Specular)          (None, 4)            0           ['surface_radiation_terms[0][0]',
+                                                                  'surface_radiation_terms[0][1]',
+                                                                  'tf.__operators__.getitem_12[0][
+                                                                 0]',                             
+                                                                  'tf.__operators__.getitem_13[0][
+                                                                 0]',                             
+                                                                  'tf.__operators__.getitem_14[0][
+                                                                 0]']                             
+                                                                                                  
+ tf.math.subtract (TFOpLambda)  (None, 4)            0           ['tf.tensordot_1[0][0]']         
+                                                                                                  
+ specular (Specular)            (None, 4)            0           ['surface_radiation_terms[0][0]',
+                                                                  'surface_radiation_terms[0][1]',
+                                                                  'tf.__operators__.getitem_9[0][0
+                                                                 ]',                              
+                                                                  'tf.__operators__.getitem_10[0][
+                                                                 0]',                             
+                                                                  'tf.__operators__.getitem_11[0][
+                                                                 0]']                             
+                                                                                                  
+ tf.math.multiply (TFOpLambda)  (None, 4)            0           ['tf.tensordot[0][0]',           
+                                                                  'specular_1[0][0]']             
+                                                                                                  
+ tf.math.multiply_1 (TFOpLambda  (None, 4)           0           ['tf.math.subtract[0][0]',       
+ )                                                                'specular[0][0]']               
+                                                                                                  
+ tf.__operators__.add (TFOpLamb  (None, 4)           0           ['tf.math.multiply[0][0]',       
+ da)                                                              'tf.math.multiply_1[0][0]']     
+                                                                                                  
+ bias_correction (BiasCorrectio  (None, 4)           8           ['tf.__operators__.add[0][0]',   
+ n)                                                               'seaice_fraction[0][0]',        
+                                                                  'tf.cast_1[0][0]']              
+                                                                                                  
+ tf.stack (TFOpLambda)          (None, 4, 2)         0           ['bias_correction[0][0]',        
+                                                                  'bias_correction[0][0]']        
+                                                                                                  
+==================================================================================================
+Total params: 6,159,375
+Trainable params: 5,253,445
+Non-trainable params: 905,930
+__________________________________________________________________________________________________
+  1/825 [..............................] - ETA: 10:15 33/825 [>.............................] - ETA: 1s    66/825 [=>............................] - ETA: 1s 99/825 [==>...........................] - ETA: 1s133/825 [===>..........................] - ETA: 1s167/825 [=====>........................] - ETA: 1s201/825 [======>.......................] - ETA: 0s235/825 [=======>......................] - ETA: 0s269/825 [========>.....................] - ETA: 0s303/825 [==========>...................] - ETA: 0s337/825 [===========>..................] - ETA: 0s371/825 [============>.................] - ETA: 0s403/825 [=============>................] - ETA: 0s437/825 [==============>...............] - ETA: 0s470/825 [================>.............] - ETA: 0s503/825 [=================>............] - ETA: 0s536/825 [==================>...........] - ETA: 0s570/825 [===================>..........] - ETA: 0s605/825 [=====================>........] - ETA: 0s639/825 [======================>.......] - ETA: 0s674/825 [=======================>......] - ETA: 0s709/825 [========================>.....] - ETA: 0s744/825 [==========================>...] - ETA: 0s779/825 [===========================>..] - ETA: 0s814/825 [============================>.] - ETA: 0s825/825 [==============================] - 2s 1ms/step
+  1/825 [..............................] - ETA: 23s 32/825 [>.............................] - ETA: 1s  65/825 [=>............................] - ETA: 1s 99/825 [==>...........................] - ETA: 1s133/825 [===>..........................] - ETA: 1s166/825 [=====>........................] - ETA: 1s200/825 [======>.......................] - ETA: 0s234/825 [=======>......................] - ETA: 0s269/825 [========>.....................] - ETA: 0s304/825 [==========>...................] - ETA: 0s339/825 [===========>..................] - ETA: 0s374/825 [============>.................] - ETA: 0s409/825 [=============>................] - ETA: 0s444/825 [===============>..............] - ETA: 0s479/825 [================>.............] - ETA: 0s514/825 [=================>............] - ETA: 0s549/825 [==================>...........] - ETA: 0s584/825 [====================>.........] - ETA: 0s619/825 [=====================>........] - ETA: 0s654/825 [======================>.......] - ETA: 0s689/825 [========================>.....] - ETA: 0s724/825 [=========================>....] - ETA: 0s759/825 [==========================>...] - ETA: 0s794/825 [===========================>..] - ETA: 0s825/825 [==============================] - 1s 1ms/step
+  1/825 [..............................] - ETA: 22s 34/825 [>.............................] - ETA: 1s  68/825 [=>............................] - ETA: 1s102/825 [==>...........................] - ETA: 1s137/825 [===>..........................] - ETA: 1s172/825 [=====>........................] - ETA: 0s207/825 [======>.......................] - ETA: 0s242/825 [=======>......................] - ETA: 0s277/825 [=========>....................] - ETA: 0s312/825 [==========>...................] - ETA: 0s347/825 [===========>..................] - ETA: 0s382/825 [============>.................] - ETA: 0s417/825 [==============>...............] - ETA: 0s452/825 [===============>..............] - ETA: 0s487/825 [================>.............] - ETA: 0s521/825 [=================>............] - ETA: 0s556/825 [===================>..........] - ETA: 0s591/825 [====================>.........] - ETA: 0s626/825 [=====================>........] - ETA: 0s661/825 [=======================>......] - ETA: 0s696/825 [========================>.....] - ETA: 0s731/825 [=========================>....] - ETA: 0s766/825 [==========================>...] - ETA: 0s801/825 [============================>.] - ETA: 0s825/825 [==============================] - 1s 1ms/step

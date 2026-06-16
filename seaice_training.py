@@ -20,6 +20,7 @@ import sys
 import timeit
 from pathlib import Path
 
+
 def predict_loop(model, distributor, nsplit, batchsize):
     model_tb=[]
     for isplit in range(nsplit):
@@ -36,7 +37,7 @@ def get_args():
     parser.add_argument('--data', help='Directory containing the training data.', type=str, default='/perm/dnk8355/netcdf_1april2024_31march2025/')
     parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+', default=['METOP-B'])
     parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/outputs_training_finalv2')
-    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='_1april2024_31march2025')
+    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='1april2024_31march2025_no_angle_bg_emis08_with_losses_original_obs_errors_bg_biasice2_5_ocean5_bg_bias_err0_001_20neurons_update_false_sic0_002_oldimplementation_emisNN_test')
     parser.add_argument('--modeltag', help='If not training, optionally use an existing model with a different tag name.', type=str, default=None)
     parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
     parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)
@@ -44,16 +45,18 @@ def get_args():
     parser.add_argument('--nepochs', help='Number of training epochs (default 8)', type=int, default=8)
     parser.add_argument('--diagsonly', help='Compute output diagnostics from an already-trained model.', action='store_true')
     parser.add_argument('--trainonly', help='Only train the model (needed for large datasets to avoid OOM GPU errors).', action='store_true')
-    parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true')
+    parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true', default=True)
 
     # Detect if running inside VSCode/Jupyter (extra kernel args in sys.argv)
     if any('--f=' in a or 'ipykernel' in a for a in sys.argv):
         print(" Detected VSCode/Jupyter interactive mode — using default debug arguments.")
         args = parser.parse_args([
             '--data', '/perm/dnk8355/netcdf_1april2024_31march2025/',
-            '--sensors', 'METOP-B','METOP-C',
-            '--output', '/perm/dnk8355/outputs_training_finalv2',
-            '--tag', '_1april2024_31march2025'
+            '--sensors', 'METOP-B',
+            '--output', '/perm/dnk8355/outputs_training_v2_jan26_report_final',
+            '--tag', '1april2024_31march2025_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10_console',
+            '--nepochs', '8',
+            '--reproducible'
         ])
     else:
         # Normal case: use real CLI arguments and ignore unknown ones if any
@@ -106,7 +109,7 @@ if '10v' in sensor_info.channel_names:
     background_emis_value = 0.8
 elif '24v' in sensor_info.channel_names:
     loss_channel_emis = np.where(sensor_info.channel_names == '24v')
-    background_emis_value = 0.7
+    background_emis_value = 0.8
 else:
     raise ValueError("No valid emissivity channel (10v or 24v) found for loss computation.")
 
@@ -132,15 +135,43 @@ with tf_strategy.scope():
     seaice_model.initialize(ice_path+'ifs_seaice_initials_METOP-B_1apr2024_31march2025_without_land_without_nans.nc', ice_path+'ifs_tsfc_METOP-B_1apr2024_31march2025_dailyx_without_land.nc')
 
     # Callback to allow updating the sea ice loss functions during training (in practice no effect as default loss is also 0.002)
-    class EpochCallback(tf.keras.callbacks.Callback):
+    class BatchEpochCallback(tf.keras.callbacks.Callback):
+        """
+        Callback to:
+        1. Update sea ice loss after certain epochs.
+        2. Record the loss values for each batch.
+        """
+        def __init__(self):
+            super().__init__()
+            # Dictionary to save losses per batch
+            self.batch_losses = {
+                'loss': [],
+                'loss_channel_weighted': [],
+                'seaice_loss': [],
+                'tsfc_loss': [],
+                'emis_loss': [],
+                'bias_loss': []
+            }
+
         def on_epoch_begin(self, epoch, logs=None):
             if epoch >= 3:
                 global seaice_model
-                seaice_model.seaice_layer.update_loss(0.002)
+                seaice_model.seaice_layer.update_loss(0.002) #Alan had a value of 0.002 I update it to 0.02
+            
+            for key in self.batch_losses.keys():
+                self.batch_losses[key].append([])
+
+        def on_train_batch_end(self, batch, logs=None):
+            # logs contains the loss values for this batch
+            if logs:
+                for key in self.batch_losses.keys():
+                    if key in logs:
+                        self.batch_losses[key][-1].append(logs[key])
+
 
     model = tf.keras.Model(seaice_model.inputs, seaice_model.outputs)
     model.summary()
-    model.compile(optimizer="adam", loss=sm.seaice_layers.loss_channel_weighted)
+    model.compile(optimizer="adam", loss=sm.seaice_layers.loss_channel_weighted, metrics=[sm.seaice_layers.loss_channel_weighted]) 
 
     if do_diags:
         # TB outputs of the initial network
@@ -151,12 +182,14 @@ with tf_strategy.scope():
     if do_train:
         distributor.makeSplit(1)
         generator = sm.DataGenerator(distributor,0)
-        history = model.fit(generator, epochs = nepochs, batch_size=batchsize, callbacks=[EpochCallback()])
-        seaice_model.save(history, filename_append, output_path)
+        batch_epoch_callback = BatchEpochCallback()  # keep the object alive to store batch losses
+        history = model.fit(generator, epochs = nepochs, batch_size=batchsize, callbacks=[batch_epoch_callback])
+        seaice_model.save(history, filename_append, output_path, callback=batch_epoch_callback)
     else:
         seaice_model.load(args.modeltag, output_path)
 
     if do_diags:
+        print("DEBUG: Entering second do_diags")
         distributor.makeSplit(nsplit)
 
         # Trained TB outputs 
@@ -165,10 +198,10 @@ with tf_strategy.scope():
           output_path+'tbsim_'+filename_append+'.nc', sensor_info.channel_names)
 
         # TB outputs with zero SIC
-        seaice_weights_list = seaice_model.seaice_layer.get_weights()
-        seaice_weights_list[0] = np.zeros( seaice_model.seaice_layer.seaice.shape,dtype=np.float32)
-        seaice_model.seaice_layer.set_weights(seaice_weights_list)
-        model_tb = predict_loop(model, distributor, nsplit, batchsize)
+        seaice_weights_list = seaice_model.seaice_layer.get_weights() #for obtaining trained weights from seaice_layer which are the sea ice fraction 
+        seaice_weights_list[0] = np.zeros( seaice_model.seaice_layer.seaice.shape,dtype=np.float32) #here we add zeros to sea ice fraction
+        seaice_model.seaice_layer.set_weights(seaice_weights_list) #here we update sea ice fraction to zero
+        model_tb = predict_loop(model, distributor, nsplit, batchsize) #predict uses the new weights (zeros) because model that comes from model = tf.keras.Model(seaice_model.inputs, seaice_model.outputs) contains that layer (seaice_model.seaice_layer) 
         sm.save_model_outputs(model_tb, geolocation,
           output_path+'tbzero_'+filename_append+'.nc', sensor_info.channel_names)
 

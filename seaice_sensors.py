@@ -97,14 +97,23 @@ class SeaiceSensors():
         # --- Adjust obs_error for AMSU-A family sensors if present ---
         amsua_sensors = ['METOP-B', 'METOP-C', 'NOAA-15', 'NOAA-18', 'NOAA-19']
 
-        # Obs errors for AMSU-A channels 
+        # Obs errors for AMSU-A channels original values
         amsua_obs_errors = {
-            '24v': 4.5,
-            '37v': 5.0,
-            '50v': 5.0,
-            '53v': 2.0,
-            '89v': 4.5
+            '24v': 2.5,
+            '37v': 3.5, 
+            '50v': 8.5, 
+            '53v': 8.0, 
+            '89v': 4.5  
         }
+
+        # Obs errors for AMSU-A channels new values
+        #amsua_obs_errors = {
+        #    '24v': 4.5, 
+        #    '37v': 5.0, 
+        #    '50v': 5.0, 
+        #    '53v': 2.0, 
+        #    '89v': 4.5  
+        #}
 
         # If any of the specified sensors are in the amsua list, update the obs_error accordingly
         if any(s in self.sensors for s in amsua_sensors):
@@ -157,11 +166,11 @@ class SeaiceSensors():
         self.all_sensors['METOP-B'] = {
           'channel': ['24v','37v','50v','53v'],
           'frequency': [23.8, 31.4, 50.3, 52.8],
-          'background_bias': [0.0,0.0],
-          'background_bias_error': 1.0,
+          'background_bias': [5,2.5], #[5,2.5] [0,0]
+          'background_bias_error': 0.001, #0.001 1.0
           'zswath_width':48.333333,
           'zfov_spacing': 3.333333,
-          'type_sensor': 'cross-track'}
+          'type_sensor':'conical' } #'conical' 'cross-track'
         
         # amsu-a onboard METOP-C
         self.all_sensors['METOP-C'] = {

@@ -1,0 +1,39 @@
+[ECMWF-INFO -ecprofile] /usr/bin/bash NON_INTERACTIVE on ac6-159 at 20260115_165108.247, PID: 4051243, JOBID: 34266670
+[ECMWF-INFO -ecprofile] $SCRATCH=/ec/res4/scratch/dnk8355
+[ECMWF-INFO -ecprofile] $PERM=/perm/dnk8355
+[ECMWF-INFO -ecprofile] $HPCPERM=/ec/res4/hpcperm/dnk8355
+[ECMWF-INFO -ecprofile] $TMPDIR=/etc/ecmwf/ssd/ssd1/tmpdirs/dnk8355.34266670
+[ECMWF-INFO -ecprofile] $SCRATCHDIR=/ec/res4/scratchdir/dnk8355/6/34266670
+2026-01-15 16:51:10.318445: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-01-15 16:51:23.356403: E tensorflow/compiler/xla/stream_executor/cuda/cuda_driver.cc:267] failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+2026-01-15 16:51:23.356674: I tensorflow/compiler/xla/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (ac6-159.bullx): /proc/driver/nvidia/version does not exist
+2026-01-15 16:51:23.357204: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] This is the ECMWF job Epilogue
+[ECMWF-INFO -ecepilog] +++ Please report issues using the Support portal +++
+[ECMWF-INFO -ecepilog] +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] Run at 2026-01-15T17:12:57 on ac
+[ECMWF-INFO -ecepilog] JobName                   : seaice_finalV2
+[ECMWF-INFO -ecepilog] JobID                     : 34266670
+[ECMWF-INFO -ecepilog] Submit                    : 2026-01-15T16:50:49
+[ECMWF-INFO -ecepilog] Start                     : 2026-01-15T16:51:04
+[ECMWF-INFO -ecepilog] End                       : 2026-01-15T17:12:57
+[ECMWF-INFO -ecepilog] QueuedTime                : 15.0
+[ECMWF-INFO -ecepilog] ElapsedRaw                : 1313
+[ECMWF-INFO -ecepilog] ExitCode                  : 0:0
+[ECMWF-INFO -ecepilog] DerivedExitCode           : 0:0
+[ECMWF-INFO -ecepilog] State                     : COMPLETED
+[ECMWF-INFO -ecepilog] Account                   : dkhirlam
+[ECMWF-INFO -ecepilog] QOS                       : nf
+[ECMWF-INFO -ecepilog] User                      : dnk8355
+[ECMWF-INFO -ecepilog] StdOut                    : /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_bgemis08_with_losses_original_obs_errors_bg_biasice2_5_ocean5_bg_bias_err0_001_7neurons_update_false_sic0_002_oldimplementation_in_emisNN_no_angle34266670.out
+[ECMWF-INFO -ecepilog] StdErr                    : /etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_bgemis08_with_losses_original_obs_errors_bg_biasice2_5_ocean5_bg_bias_err0_001_7neurons_update_false_sic0_002_oldimplementation_in_emisNN_no_angle34266670.err
+[ECMWF-INFO -ecepilog] NNodes                    : 1
+[ECMWF-INFO -ecepilog] NCPUS                     : 2
+[ECMWF-INFO -ecepilog] SBU                       : 6.223
+[ECMWF-INFO -ecepilog] jobtag                    : dnk8355-seaice_finalV2-1x2-/etc/ecmwf/nfs/dh2_home_b/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/seaiceV2_bgemis08_with_losses_original_obs_errors_bg_biasice2_5_ocean5_bg_bias_err0_001_7neurons_update_false_sic0_002_oldimplementation_in_emisNN_no_angle_JOBID_.out
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+

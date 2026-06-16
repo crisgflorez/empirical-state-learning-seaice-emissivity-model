@@ -50,7 +50,7 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
         self.layers.append(tf.keras.layers.Dense(width,activation=activation))
         self.layers.append(tf.keras.layers.Dense(npol,activation=activation))
         self.frequency_mapping=emissivity_mapping[0]
-        #self.polarisation_mapping=emissivity_mapping[1]
+        self.polarisation_mapping=emissivity_mapping[1] #Removed in the new version but needed in the first one
         self.bg_error = bg_error
         self.background = background
         self.use_loss = use_loss
@@ -60,6 +60,44 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
     def call(self, tsfc, ice_properties, isensor, pol0, pol1):
         inputs = tf.concat([tf.reshape(tsfc,(-1,1)),ice_properties],1)
         out = []
+
+        ###############################################
+        #Old implementation original
+        #for i in range(1+self.channels):
+        #    if i == 0:
+        #        freq = tf.reshape(tf.zeros_like(tsfc)+23.8/100.,(-1,1))
+        #        pol  = tf.reshape(tf.zeros_like(tsfc)           ,(-1,1))
+        #    else:
+        #        index = tf.concat([tf.reshape(isensor,(-1,1)),tf.reshape(i-1+tf.zeros_like(isensor),(-1,1))],1)
+        #        freq = tf.reshape(tf.gather_nd(self.frequency_mapping,   index),(-1,1))/100.0
+        #        pol  = tf.reshape(tf.gather_nd(self.polarisation_mapping,index),(-1,1))
+        #    inputs_freq_pol = tf.concat([inputs,freq],1)
+        #    mid1 = self.layers[0](inputs_freq_pol)
+        #    #mid2 = self.layers[1](mid1)
+        #    pol_pair = self.layers[1](mid1)
+        #    # Polarisation mixing (add cos^2 scan angle for cross-track QV/QH version eventually)
+        #    one_channel = (1-pol[:,0])*pol_pair[:,0] + pol[:,0]*pol_pair[:,1]
+        #    out.append(one_channel)
+
+        ###############################################
+        #Old implementation adapted 
+        #In previous code the first channel was added forcing it 
+        #and there was return out[:,1:]
+        #################################################
+        #for i in range(self.channels):
+        #    index = tf.concat([tf.reshape(isensor,(-1,1)),tf.reshape(i+tf.zeros_like(isensor),(-1,1))],1)
+        #    freq = tf.reshape(tf.gather_nd(self.frequency_mapping,   index),(-1,1))/100.0
+        #    pol  = tf.reshape(tf.gather_nd(self.polarisation_mapping,index),(-1,1))
+        #    inputs_freq_pol = tf.concat([inputs,freq],1)
+        #    mid1 = self.layers[0](inputs_freq_pol)
+        #    #mid2 = self.layers[1](mid1)
+        #    pol_pair = self.layers[1](mid1)
+        #    # Polarisation mixing (add cos^2 scan angle for cross-track QV/QH version eventually)
+        #    one_channel = (1-pol[:,0])*pol_pair[:,0] + pol[:,0]*pol_pair[:,1]
+        #    out.append(one_channel)
+
+        ########################################################################################################
+        #New implementation#
         for i in range(self.channels):
             index = tf.concat([tf.reshape(isensor,(-1,1)),tf.reshape(i+tf.zeros_like(isensor),(-1,1))],1)
             freq = tf.reshape(tf.gather_nd(self.frequency_mapping,   index),(-1,1))/100.0
@@ -67,22 +105,24 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
             inputs_freq = tf.concat([inputs,freq],1)
             mid1 = self.layers[0](inputs_freq)
             pol_pair = self.layers[1](mid1)
-            # Polarisation mixing (add cos^2 scan angle for cross-track QV/QH version eventually)
-            # pol_pair_corr_v = pol_pair[:,0]*tf.cos(scan_angle_rad)**2 + pol_pair[:,1]*tf.sin(scan_angle_rad)**2
-            # pol_pair_corr_h = pol_pair[:,0]*tf.sin(scan_angle_rad)**2 + pol_pair[:,1]*tf.cos(scan_angle_rad)**2
+            #### Polarisation mixing (add cos^2 scan angle for cross-track QV/QH version eventually)
+            #### pol_pair_corr_v = pol_pair[:,0]*tf.cos(scan_angle_rad)**2 + pol_pair[:,1]*tf.sin(scan_angle_rad)**2
+            #### pol_pair_corr_h = pol_pair[:,0]*tf.sin(scan_angle_rad)**2 + pol_pair[:,1]*tf.cos(scan_angle_rad)**2
 
-            # one_channel = (1-pol[:,0])*pol_pair_corr_v + pol[:,0]*pol_pair_corr_h
+            #### one_channel = (1-pol[:,0])*pol_pair_corr_v + pol[:,0]*pol_pair_corr_h
             pol0_i = pol0[:, i]
             pol1_i = pol1[:, i]
             one_channel = pol0_i*pol_pair[:,0]+pol1_i*pol_pair[:,1] 
             out.append(one_channel)
+        ####################################################################
+
         out = tf.stack(out,1)
         if self.use_loss:
             emis_loss = tf.reduce_sum(tf.math.square(
               tf.math.maximum(-1*(out[:,self.loss_channel]-self.background),0.0)))/tf.square(self.bg_error)/self.nobs
             self.add_loss(emis_loss)
             self.add_metric(emis_loss,name='emis_loss',aggregation='mean')
-        return out
+        return out #out[:,1:] use for old implementation original
 
 
 def seaice_initializer(shape, ifs_seaice_file, dtype=tf.float32):
