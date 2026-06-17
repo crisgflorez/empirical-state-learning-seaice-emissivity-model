@@ -1,14 +1,14 @@
 #!/bin/bash
 
 #SBATCH --qos=np
-#SBATCH --time=3:00:00 #2 years of files about 2h
+#SBATCH --time=12:00:00 #1month of files about 2h 30min
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --output=/home/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/retrieve_odb_files_paper2026_%j.out
-#SBATCH --job-name=retrieve_odb_files_paper2026
+#SBATCH --output=/home/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/sbatchlogs/grib_NH_SH.out
+#SBATCH --job-name=grib_NH_SH
 
 
-archDir=odb_files
+archDir=grib_files_NH_SH
 
 if [ ! -d "$PERM/paper2026/${archDir}" ]; then
   mkdir -p "$PERM/paper2026/${archDir}"
@@ -25,20 +25,12 @@ echo "#####################"
 echo " " 
 
 # configuration
-only_one_day=false    # Change to true to download only one day
-single_day="2025-02-13"  # Specific day if only_one_day=true
+only_one_day=false  # Change to true to download only one day
+single_day="2024-03-14"  # Specific day if only_one_day=true
 
 start_date="2024-04-01"
 switch_date="2024-11-13" #When the model was changed from pre-operational to operational. 12/11/2024 last day that was pre-operational
-end_date="2026-04-01"       #$(date +%Y-%m-%d)
-
-REPORTYPE=21009/21010
-#21009	METOP-B AMSUA 	Radiances All-sky	AMSUA All-sky	Operational	2013-11-19	40r1
-#21010	METOP-C AMSUA 	Radiances All-Sky	AMSUA All-sky	Operational	2018-11-08	46r1
-
-
-# stream=oper --> for the early delivery (stream=oper) then "LSCREEN" is true in every outer loop
-stream=lwda
+end_date="2026-04-01"
 
 if [ "$only_one_day" = true ]; then
   current_date="$single_day"
@@ -46,6 +38,8 @@ if [ "$only_one_day" = true ]; then
 else
   current_date="$start_date"
 fi
+
+
 
 while [[ "$current_date" < "$end_date" || "$current_date" == "$end_date" ]]; do
   YYYY=$(date -d "$current_date" +%Y)
@@ -59,7 +53,8 @@ while [[ "$current_date" < "$end_date" || "$current_date" == "$end_date" ]]; do
     expID=79
   else
     expID=1
-  fi
+  fi 
+
 
   echo "$current_date | expID: $expID"
 
@@ -67,19 +62,22 @@ while [[ "$current_date" < "$end_date" || "$current_date" == "$end_date" ]]; do
 # Configure ODB MARS REQUEST
 #############################
 # change targetFile name here
-targetFile=amsua_ofb_${stream}_${YYYY}${MM}${DD}_NH_SH_variables_filtered_lsm_lower02.odb  
+targetFile=HRES_SIC_TSKIN_N80_${YYYY}${MM}${DD}_NH_SH.grb  #_filtered.odb
 
 
 cat > marsODB.inp << EOF
 RETRIEVE,
-    STREAM=${stream},
+    STREAM=oper,
     CLASS=od,
     EXPVER=${expID},
-    TYPE=OFB,
+    GRID=N80,
+    GAUSSIAN=reduced,
+    TYPE=AN,
     DATE=${YYYY}${MM}${DD},
-    TIME=00/12,
-    REPORTYPE=${REPORTYPE},
-    FILTER="select distinct expver, andate, antime, reportype,date,lsm,seaice, time, lat, lon,gp_number, satellite_identifier,satellite_instrument,windspeed10m,tsfc,snow_depth, snow_density,fg_rttov_cld_fraction,zenith,azimuth,scanline,scanpos,vertco_reference_1, emis_atlas, emis_retr, emis_fg, datum_tbflag,obsvalue,datum_status,datum_event1,datum_anflag,datum_rdbflag, biascorr, biascorr_fg, fg_depar, an_depar, final_obs_error,obs_error, tausfc, tup, tdown, tausfc_cld, tup_cld, tdown_cld  where lsm < 0.2 and (lat > 45 or lat<-45)",
+    TIME=00:00:00/06:00:00/12:00:00/18:00:00,
+    LEVTYPE=SFC,
+    PARAM=172.128/31.128/235.128,   #172.128: land sea mask, #31.128:sea ice area fraction, #235.128: Skin temperature
+    FILTER="select * where (lat<-45 or lat>45)",
     TARGET=${targetFile}
 
 EOF

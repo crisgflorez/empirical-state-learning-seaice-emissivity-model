@@ -12,11 +12,11 @@ from multiprocessing import Pool
 # -----------------------------
 # 1. Load ODB paths and reference grid N80
 # -----------------------------
-base_path = '/perm/dnk8355/tests_first_year/odb_files_test/'
+base_path = '/perm/dnk8355/paper2026/odb_files/'
 pattern = os.path.join(base_path, 'amsua_ofb_lwda_*_NH_SH_variables_filtered_lsm_lower02.odb')
 
-# Filter feb 2025 files
 all_files = sorted(glob.glob(pattern))
+# Filter feb 2025 files
 #feb_2025_files = [
 #    f for f in all_files
 #    if datetime.strptime(os.path.basename(f).split('_')[3], "%Y%m%d").year == 2025
@@ -24,7 +24,7 @@ all_files = sorted(glob.glob(pattern))
 #]
 
 start = datetime(2024, 4, 1)
-end   = datetime(2025, 3, 31)
+end   = datetime(2026, 3, 31)
 
 filtered_files = []
 for f in all_files:
@@ -40,11 +40,11 @@ for f in all_files:
 # -----------------------------
 # Set to "all" to process everything
 # Or set to a list like ["FG_DEP"] or ["TSFC", "FG_DEP"]
-#export_vars = "all"
-export_vars = ["FG_DEP"]
+export_vars = "all"
+#export_vars = ["FG_DEP"]
 # export_vars = ["TSFC", "FG_DEP"]
 # CONFIG: skip writing text files (summaries + checks log)
-skip_txt = True  # True = skip , False = write
+skip_txt = False  # True = skip , False = write
 
 # Load grid
 grid_ds = xr.open_dataset("/perm/dnk8355/odb_files_test/lat_lon_corrected_ref_above50.nc")
@@ -52,7 +52,7 @@ lons_ref = grid_ds.lon.values
 lats_ref = grid_ds.lat.values
 grid_coords_rad = np.radians(np.column_stack((lats_ref, lons_ref)))
 
-output_dir = '/perm/dnk8355/netcdf_daily_april2024_april2025'
+output_dir = '/perm/dnk8355/paper2026/netcdf_daily_1april2024_31march2026'
 os.makedirs(output_dir, exist_ok=True)
 
 # -----------------------------
