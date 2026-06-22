@@ -1,0 +1,6 @@
+[ECMWF-INFO -ecprofile] /usr/bin/bash NON_INTERACTIVE on ab6-104 at 20260622_073354.775, PID: 444904, JOBID: 29080907
+[ECMWF-INFO -ecprofile] $SCRATCH=/ec/res4/scratch/dnk8355
+[ECMWF-INFO -ecprofile] $PERM=/perm/dnk8355
+[ECMWF-INFO -ecprofile] $HPCPERM=/ec/res4/hpcperm/dnk8355
+[ECMWF-INFO -ecprofile] $TMPDIR=/etc/ecmwf/ssd/ssd1/tmpdirs/dnk8355.29080907
+[ECMWF-INFO -ecprofile] $SCRATCHDIR=/ec/res4/scratchdir/dnk8355/3/29080907

@@ -77,7 +77,6 @@ RETRIEVE,
     TIME=00:00:00/06:00:00/12:00:00/18:00:00,
     LEVTYPE=SFC,
     PARAM=172.128/31.128/235.128,   #172.128: land sea mask, #31.128:sea ice area fraction, #235.128: Skin temperature
-    FILTER="select * where (lat<-45 or lat>45)",
     TARGET=${targetFile}
 
 EOF

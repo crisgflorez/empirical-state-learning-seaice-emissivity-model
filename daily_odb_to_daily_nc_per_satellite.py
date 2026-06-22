@@ -16,12 +16,6 @@ base_path = '/perm/dnk8355/paper2026/odb_files/'
 pattern = os.path.join(base_path, 'amsua_ofb_lwda_*_NH_SH_variables_filtered_lsm_lower02.odb')
 
 all_files = sorted(glob.glob(pattern))
-# Filter feb 2025 files
-#feb_2025_files = [
-#    f for f in all_files
-#    if datetime.strptime(os.path.basename(f).split('_')[3], "%Y%m%d").year == 2025
-#    and datetime.strptime(os.path.basename(f).split('_')[3], "%Y%m%d").month == 2
-#]
 
 start = datetime(2024, 4, 1)
 end   = datetime(2026, 3, 31)
@@ -47,7 +41,7 @@ export_vars = "all"
 skip_txt = False  # True = skip , False = write
 
 # Load grid
-grid_ds = xr.open_dataset("/perm/dnk8355/odb_files_test/lat_lon_corrected_ref_above50.nc")
+grid_ds = xr.open_dataset("/perm/dnk8355/paper2026/grib_files_NH_SH/lat_lon_corrected_ref_above&below44degrees.nc")
 lons_ref = grid_ds.lon.values
 lats_ref = grid_ds.lat.values
 grid_coords_rad = np.radians(np.column_stack((lats_ref, lons_ref)))
@@ -64,28 +58,22 @@ def process_odb_file_daily(odbFile_name,output_dir, grid_coords_rad,export_vars,
         'time@hdr','date@hdr','vertco_reference_1@body',
         'obsvalue@body','tsfc@modsurf','windspeed10m@modsurf','emis_atlas@radiance_body',
         'fg_rttov_cld_fraction@allsky','zenith@sat', 'azimuth@sat',
-        'scanline@radiance', 'scanpos@radiance','fg_depar@body',
+        'scanline@radiance', 'scanpos@radiance','fg_depar@body','an_depar@body',
         'tausfc@radiance_body','tausfc_cld@allsky_body',
         'tup@radiance_body','tup_cld@allsky_body',
         'tdown@radiance_body','tdown_cld@allsky_body'
-    ] #'fg_depar@body','an_depar@body',
+    ] #'an_depar@body',
 
     myODB = odc.read_odb(odbFile_name, single=True, columns=cols_needed)
 
     # Map reportype to satellite index
     myODB['reportype'] = myODB['reportype'].replace({
-        21001: 2, #'NOAA-15',
-        21004: 3, #'NOAA-18',
-        21005: 4, #'NOAA-19',
         21009: 0, #'METOP-B',
         21010: 1, #'METOP-C'
     })
 
     # Apply land-sea mask filter
     myODB = myODB[myODB['lsm@modsurf'] == 0] #< 0.01
-
-    # We focus only on latitudes above 50.5 degrees to match the reference grid
-    myODB = myODB[myODB['lat@hdr'] >= 50.5]
 
     #invalid values in the dataframe are saved as -3.4028234663852886e+38
     # I could have used any other variable to identify the value of invalid values, 
@@ -171,7 +159,7 @@ def process_odb_file_daily(odbFile_name,output_dir, grid_coords_rad,export_vars,
 
     if not skip_txt:
         # Append in to log file
-        log_dir = "/perm/dnk8355/odb_files_test/logs"
+        log_dir = "/perm/dnk8355/paper2026/odb_files/logs"
         os.makedirs(log_dir, exist_ok=True)
         log_filename = os.path.join(log_dir, "checks_odb_files.txt")
 
@@ -211,14 +199,14 @@ def process_odb_file_daily(odbFile_name,output_dir, grid_coords_rad,export_vars,
         'tausfc_cld@allsky_body': 'TAUSFC_CLD','tdown_cld@allsky_body': 'TDOWN_CLD','tup_cld@allsky_body': 'TUP_CLD',
         'nearest_lats': 'NEAREST_LATS','nearest_lons': 'NEAREST_LONS','seaice@modsurf': 'SEAICE',
         'zenith@sat': 'ZENITH','azimuth@sat': 'AZIMUTH',
-        'scanline@radiance': 'SCANLINE', 'scanpos@radiance': 'SCANPOS', 'fg_depar@body': 'FG_DEP'
+        'scanline@radiance': 'SCANLINE', 'scanpos@radiance': 'SCANPOS', 'fg_depar@body': 'FG_DEP','an_depar@body': 'AN_DEP'
     }
 
     # Variables independent of the channel
     one_d_vars = ['JULIAN_DAY','INITIAL_IGRID','TSFC','WINDSPEED10M','CLOUD_FRACTION','LAT','LON','NEAREST_LATS','NEAREST_LONS','SEAICE','ZENITH','AZIMUTH','SCANLINE','SCANPOS']
     # Variables that depend on the channel
     # We will save these variables in a 2D array with shape (obs, channel)
-    chan_vars = ['OBSVALUE','EMIS_WATER','TAUSFC','TDOWN','TUP','TAUSFC_CLD','TDOWN_CLD','TUP_CLD','FG_DEP']
+    chan_vars = ['OBSVALUE','EMIS_WATER','TAUSFC','TDOWN','TUP','TAUSFC_CLD','TDOWN_CLD','TUP_CLD','FG_DEP','AN_DEP']
     
     # -----------------------------
     # Export loop
@@ -244,7 +232,7 @@ def process_odb_file_daily(odbFile_name,output_dir, grid_coords_rad,export_vars,
     # We will create a NetCDF file for each satellite and each variable
     # The output files will be named as: <satellite>_<date>_<variable>.nc
     # e.g. NOAA-15_20240501_OBSVALUE.nc
-    names_sat=['METOP-B', 'METOP-C', 'NOAA-15', 'NOAA-18', 'NOAA-19']
+    names_sat=['METOP-B', 'METOP-C']
     for sat in myODB_cleaned['reportype'].unique():
         sat_data = myODB_cleaned[myODB_cleaned['reportype'] == sat].copy()
         sat_name = names_sat[sat]
