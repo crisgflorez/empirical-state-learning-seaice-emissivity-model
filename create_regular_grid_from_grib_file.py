@@ -18,7 +18,7 @@ from sklearn.neighbors import BallTree
 file_name="/perm/dnk8355/paper2026/grib_files_NH_SH/HRES_SIC_TSKIN_N80_20240401_NH_SH.grb"
 # We load the grib file in a xarray dataset
 ds = xr.open_dataset(file_name, engine="cfgrib")
-# We filter the dataset to keep only latitudes above 45°N and below 45°S
+# We filter the dataset to keep only latitudes above 44°N and below 44°S
 ds = ds.where((ds.latitude > 44) | (ds.latitude < -44), drop=True)
 # Extract all latitudes and longitudes from N80 reduced gaussian grid
 lat_all = ds.latitude.values

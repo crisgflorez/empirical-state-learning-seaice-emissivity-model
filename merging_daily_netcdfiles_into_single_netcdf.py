@@ -3,22 +3,22 @@ import glob
 import os
 from itertools import product
 
-#With this scriot daily Netcdf files are merged into monthly or full period Netcdf files
+#With this script daily Netcdf files are merged into monthly or full period Netcdf files
 
 # Satellite names and variables
-sats = ['METOP-B', 'METOP-C', 'NOAA-15', 'NOAA-18', 'NOAA-19']
-names_nc = ['FG_DEP']
-#names_nc = [
-#    'LAT','LON','JULIAN_DAY','INITIAL_IGRID',
-#    'OBSVALUE','TSFC','WINDSPEED10M','CLOUD_FRACTION','EMIS_WATER',
-#    'TAUSFC','TDOWN','TUP','TAUSFC_CLD',
-#    'TDOWN_CLD','TUP_CLD','NEAREST_LATS','NEAREST_LONS','SEAICE','ZENITH',
-#    'AZIMUTH','SCANLINE', 'SCANPOS'
-#]
+sats = ['METOP-B', 'METOP-C']
+#names_nc = ['FG_DEP']
+names_nc = [
+    'LAT','LON','JULIAN_DAY','INITIAL_IGRID',
+    'OBSVALUE','TSFC','WINDSPEED10M','CLOUD_FRACTION','EMIS_WATER',
+    'TAUSFC','TDOWN','TUP','TAUSFC_CLD',
+    'TDOWN_CLD','TUP_CLD','NEAREST_LATS','NEAREST_LONS','SEAICE','ZENITH',
+    'AZIMUTH','SCANLINE', 'SCANPOS','FG_DEP','AN_DEP'
+]
 
 
-daily_dir = '/perm/dnk8355/netcdf_daily_april2024_april2025'
-monthly_dir = '/perm/dnk8355/netcdf_1april2024_31march2025'
+daily_dir = '/perm/dnk8355/paper2026/netcdf_daily_1april2024_31march2026'
+monthly_dir = '/perm/dnk8355/paper2026/netcdf_1april2024_31march2026'
 os.makedirs(monthly_dir, exist_ok=True)
 
 pairs = set(product(sats, names_nc))
