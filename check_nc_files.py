@@ -13,7 +13,7 @@ data_dir = "/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026"
 # =========================================================
 # 2. CONFIG: LAT FILTER (None = no filter)
 # =========================================================
-lat_limit = 50   # <- None if we don't want to filter
+lat_limit = None   # <- None if we don't want to filter
 
 # =========================================================
 # 3. LOAD LAT FILES 
@@ -123,7 +123,7 @@ def process_file(f, lat_dict, lat_limit):
 
                     records_daily_all.append(daily_all)
                     records_daily_hemis.append(daily_hemis)
-                    
+
             # =============================
             # Variables without channels
             # =============================
@@ -202,12 +202,12 @@ if __name__ == "__main__":
 
     out_hem = os.path.join(
         data_dir,
-        "daily_by_hemisphere_above_below_50.pkl"
+        "daily_by_hemisphere_above_below_45.pkl"
     )
 
     out_global = os.path.join(
         data_dir,
-        "daily_global_above_below_50.pkl"
+        "daily_global_above_below_45.pkl"
     )
 
     df_hem.to_pickle(out_hem)
