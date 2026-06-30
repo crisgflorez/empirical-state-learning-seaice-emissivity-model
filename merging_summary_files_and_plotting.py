@@ -11,6 +11,12 @@ import matplotlib.dates as mdates
 # =========================================================
 txt_dir_daily = "/perm/dnk8355/paper2026/netcdf_daily_1april2024_31march2026"
 txt_dir_all = "/perm/dnk8355/paper2026/netcdf_1april2024_31march2026"
+
+# =========================================================
+#    OUTPUT DIRECTORY
+# =========================================================
+dir_plot = "/home/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/plots"
+
 # =========================================================
 # 2. CHECK IF ALL SUMMARY FILES ALREADY EXIST
 # =========================================================
@@ -217,7 +223,7 @@ plt.suptitle("Percentage of invalid observations by channel", fontsize=25)
 plt.tight_layout(rect=[0, 0.05, 1, 0.95])
 
 plt.savefig(
-    os.path.join(txt_dir, "time_series_invalid_obs_from_txt.png"),
+    os.path.join(dir_plot, "time_series_invalid_obs_per_channel.png"),
     bbox_inches="tight"
 )
 
