@@ -2,6 +2,7 @@ import xarray as xr
 import glob
 import os
 from itertools import product
+import pandas as pd
 
 #With this script daily Netcdf files are merged into monthly or full period Netcdf files
 
@@ -29,6 +30,20 @@ for sat, var in sorted(pairs):
 
     if not matching_files:
         continue
+
+    #File 01/04/2024 has obs values from 31/03/2024, so we need to remove obs values before 01/04/2024 from this file
+    first_file = matching_files[0]
+
+    date_str = os.path.basename(first_file).split("_")[1]
+    day_start = pd.to_datetime(date_str, format="%Y%m%d")
+
+    tmp_file = first_file.replace(".nc", "_tmp.nc")
+
+    with xr.open_dataset(first_file) as ds:
+        ds = ds.where(ds["obs"] >= day_start, drop=True)
+        ds.to_netcdf(tmp_file)
+
+    os.replace(tmp_file, first_file)
 
     print(f"Merging {len(matching_files)} files for {sat} - {var}")
 
