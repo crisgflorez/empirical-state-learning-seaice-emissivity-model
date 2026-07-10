@@ -34,36 +34,26 @@ def predict_loop(model, distributor, nsplit, batchsize):
 
 def get_args():
     parser = argparse.ArgumentParser('Sea ice training v2')
-    parser.add_argument('--data', help='Directory containing the training data.', type=str, default='/perm/dnk8355/netcdf_1april2024_31march2025/')
+    parser.add_argument('--data', help='Directory containing the training data.', type=str, default='/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/')
     parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+', default=['METOP-B'])
-    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/outputs_training_finalv2')
-    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='1april2024_31march2025_no_angle_bg_emis08_with_losses_original_obs_errors_bg_biasice2_5_ocean5_bg_bias_err0_001_20neurons_update_false_sic0_002_oldimplementation_emisNN_test')
+    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/paper2026/outputs_training/exp1_METOPB')
+    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='1april2024_31march2026_bg_emis07_with_losses_adjusted_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_002_newimplementation_in_emisNN_no_angle_25epochs_sbatch_python3_12')
     parser.add_argument('--modeltag', help='If not training, optionally use an existing model with a different tag name.', type=str, default=None)
     parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
     parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)
     parser.add_argument('--nsteps', help='Number of time steps (usually days) in the model (default all)', type=int, default=-1)
-    parser.add_argument('--nepochs', help='Number of training epochs (default 8)', type=int, default=8)
+    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=25)
     parser.add_argument('--diagsonly', help='Compute output diagnostics from an already-trained model.', action='store_true')
     parser.add_argument('--trainonly', help='Only train the model (needed for large datasets to avoid OOM GPU errors).', action='store_true')
     parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true', default=True)
 
-    # Detect if running inside VSCode/Jupyter (extra kernel args in sys.argv)
-    if any('--f=' in a or 'ipykernel' in a for a in sys.argv):
-        print(" Detected VSCode/Jupyter interactive mode — using default debug arguments.")
-        args = parser.parse_args([
-            '--data', '/perm/dnk8355/netcdf_1april2024_31march2025/',
-            '--sensors', 'METOP-B',
-            '--output', '/perm/dnk8355/outputs_training_v2_jan26_report_final',
-            '--tag', '1april2024_31march2025_bg_emis06_with_losses_new_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_02_newimplementation_in_emisNN_with_angle_sbatch_19jan_python3_10_console',
-            '--nepochs', '8',
-            '--reproducible'
-        ])
-    else:
-        # Normal case: use real CLI arguments and ignore unknown ones if any
-        args, unknown = parser.parse_known_args()
-        if unknown:
-            print(" Ignoring unknown arguments:", unknown)
-    
+    # Read command line arguments
+    # parse_known_args avoids errors from extra Jupyter/VSCode arguments
+    args, unknown = parser.parse_known_args()
+
+    if unknown:
+        print("Ignoring unknown arguments:", unknown)
+
     return args
 
  
@@ -87,7 +77,7 @@ do_diags = not args.trainonly
 do_train = not args.diagsonly
 
 # For larger training datasets, model.predict() crashes while model.fit() is fine - so predict over a split-up dataset
-nsplit = 3
+nsplit = 5 #Last version of Alan is 5 instead of 3
 
 # ECMWF HPC specific config. 
 os.environ['HDF5_USE_FILE_LOCKING']='FALSE'
@@ -106,10 +96,10 @@ sm.seaice_layers.obs_error = sensor_info.obs_error
 
 if '10v' in sensor_info.channel_names:
     loss_channel_emis = np.where(sensor_info.channel_names == '10v')
-    background_emis_value = 0.8
+    background_emis_value = 0.7
 elif '24v' in sensor_info.channel_names:
     loss_channel_emis = np.where(sensor_info.channel_names == '24v')
-    background_emis_value = 0.8
+    background_emis_value = 0.7
 else:
     raise ValueError("No valid emissivity channel (10v or 24v) found for loss computation.")
 
@@ -132,7 +122,7 @@ with tf_strategy.scope():
       loss_channel_emis = loss_channel_emis[0][0],background_emis=background_emis_value,
       background_bias=sensor_info.background_bias, bg_error_bias=sensor_info.background_bias_error,
       nlag=1, alpha=[0.6,0.4], emissivity_mapping=(sensor_info.frequency_maps,sensor_info.polarisation_maps))
-    seaice_model.initialize(ice_path+'ifs_seaice_initials_METOP-B_1apr2024_31march2025_without_land_without_nans.nc', ice_path+'ifs_tsfc_METOP-B_1apr2024_31march2025_dailyx_without_land.nc')
+    seaice_model.initialize(ice_path+'ifs_seaice_initials_METOP-B_1apr2024_31march2026_without_land_without_nans.nc', ice_path+'ifs_tsfc_METOP-B_1apr2024_31march2026_dailyx_without_land.nc') 
 
     # Callback to allow updating the sea ice loss functions during training (in practice no effect as default loss is also 0.002)
     class BatchEpochCallback(tf.keras.callbacks.Callback):

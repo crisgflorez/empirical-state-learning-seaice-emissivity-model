@@ -327,7 +327,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     Load training data for the sea ice network
     """
 
-    fields_1d = ['JULIAN_DAY','','TSFC','WINDSPEED10M','CLOUD_FRACTION','SCANPOS','ZENITH']
+    fields_1d = ['JULIAN_DAY','IGRID','TSFC','WINDSPEED10M','CLOUD_FRACTION','SCANPOS','ZENITH']
     fields_chan = ['OBSVALUE','EMIS_WATER','TAUSFC','TDOWN','TUP','TAUSFC_CLD','TDOWN_CLD','TUP_CLD']  
 
     nstep_all = []
@@ -340,15 +340,6 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     # Build common basis to combine instruments
     for sensor in sensors:
         filebase = icedir+sensor+'_' #'/'+sensor+'_'
-
-        print("Indexing",sensor)
-        if sensor!='METOP-B':
-            IGRID='INITIAL_IGRID'
-            fields_1d[1] = IGRID
-  
-        else:
-            IGRID='IGRID'
-            fields_1d[1] = IGRID
 
 
         julian_day = xr.open_dataset(filebase+fields_1d[0]+'.nc')
@@ -378,7 +369,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
         print("    Number of obs:",nobs)
 
         igrid = xr.open_dataset(filebase+fields_1d[1]+'.nc')
-        ngrid = igrid[IGRID].data.max() + 1
+        ngrid = len(np.unique(igrid.IGRID))
         igrid.close()
         
         ngrid_all.append(ngrid)
@@ -413,11 +404,9 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
     lat = np.zeros((nobs_total),np.float32)
     julian_day = np.zeros((nobs_total),np.float64)
 
-    grid = xr.open_dataset("/perm/dnk8355/odb_files_test/METOP-B_1april2024_31march2025_lat_lon_corrected_ref_above50_without_land.nc")
+    #grid = xr.open_dataset("/perm/dnk8355/odb_files_test/METOP-B_1april2024_31march2025_lat_lon_corrected_ref_above50_without_land.nc")
     #grid = xr.open_dataset(icedir+'grid.nc')
-    grid_lon=grid.lon.values
-    grid_lat=grid.lat.values
-    grid.close()
+
 
     noff = 0
     isensor=0
@@ -428,14 +417,6 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
 
         ibegin = np.count_nonzero(istep < 0)
         ilast  = np.count_nonzero(istep < nstep)
-
-        if sensor!='METOP-B':
-            IGRID='INITIAL_IGRID'
-            fields_1d[1] = IGRID
-  
-        else:
-            IGRID='IGRID'
-            fields_1d[1] = IGRID
 
 
         obs = {}
@@ -448,7 +429,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
 
 
         x0[noff:noff+nobs,0] = np.maximum(273.0 - obs["TSFC"].TSFC[ibegin:ilast],0.0)/30.0
-        x0[noff:noff+nobs,1] = obs[IGRID][IGRID][ibegin:ilast]
+        x0[noff:noff+nobs,1] = obs["IGRID"].IGRID[ibegin:ilast]
         x0[noff:noff+nobs,2] = istep[ibegin:ilast]
         x0[noff:noff+nobs,3] = obs["TSFC"].TSFC[ibegin:ilast]
         x0[noff:noff+nobs,4] = obs["WINDSPEED10M"].WINDSPEED10M[ibegin:ilast]
@@ -471,10 +452,11 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
             print(f"Warning: ZENITH file missing for {sensor}, filled with nans.")
 
         isensor += 1
+        grid_lon=xr.open_dataset(filebase+'NEAREST_LONS.nc').NEAREST_LONS.values
+        grid_lat=xr.open_dataset(filebase+'NEAREST_LATS.nc').NEAREST_LATS.values
 
-        if sensor=='METOP-B':
-            lon[noff:noff+nobs] = grid_lon[obs[IGRID][IGRID][ibegin:ilast]]
-            lat[noff:noff+nobs] = grid_lat[obs[IGRID][IGRID][ibegin:ilast]]
+        lon[noff:noff+nobs] = grid_lon[ibegin:ilast]
+        lat[noff:noff+nobs] = grid_lat[ibegin:ilast]
         julian_day[noff:noff+nobs] = obs["JULIAN_DAY"].JULIAN_DAY[ibegin:ilast]
         
         for dataset in obs.values():
