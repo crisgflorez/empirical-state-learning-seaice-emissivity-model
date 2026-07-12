@@ -42,7 +42,7 @@ def get_args():
     parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
     parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)
     parser.add_argument('--nsteps', help='Number of time steps (usually days) in the model (default all)', type=int, default=-1)
-    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=25)
+    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=8)
     parser.add_argument('--diagsonly', help='Compute output diagnostics from an already-trained model.', action='store_true')
     parser.add_argument('--trainonly', help='Only train the model (needed for large datasets to avoid OOM GPU errors).', action='store_true')
     parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true', default=True)
