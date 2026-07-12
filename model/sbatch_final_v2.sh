@@ -4,7 +4,7 @@
 # change here to submit the job
 ###################################
 #SBATCH --qos=nf
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --job-name=seaice_finalV2
