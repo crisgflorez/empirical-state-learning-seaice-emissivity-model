@@ -27,12 +27,16 @@ import matplotlib.gridspec as gridspec
 # ifs_sic = xr.open_dataset("/perm/dnk8355/netcdf_1april2024_31march2025/ifs_seaice_initials_METOP-B_1apr2024_31march2025_without_land_without_nans.nc")
 # ifs_tsfc = xr.open_dataset("/perm/dnk8355/netcdf_1april2024_31march2025/ifs_tsfc_METOP-B_1apr2024_31march2025_dailyx_without_land.nc")
 
-folder = "/perm/dnk8355/outputs_training_v2_jan26_report_final"
-output_path = "/perm/dnk8355/outputs_training_v2_jan26/plots_bg_emis08_no_angle_bg_biasice2_5_ocean5_bg_bias_err0_001_20neurons"
-tag_name='no_angle_bg_emis07_with_losses'
+folder = "/home/dnk8355/perm/paper2026/outputs_training/exp1_METOPC_obs_err_fromMETOPB"
+output_path = "/home/dnk8355/perm/paper2026/outputs_training/exp1_METOPC_obs_err_fromMETOPB"
+tag_name='8epochs'
+#scanpos - scan positions for each observation
+scanpos=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-C_SCANPOS.nc")
+#FG_dep for each observation
+fg_dep=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-C_FG_DEP.nc")
 
 # Collect all .nc files in the folder
-files = sorted(glob.glob(os.path.join(folder, "*_sbatch_19jan*.nc")))
+files = sorted(glob.glob(os.path.join(folder, "*_8epochs*.nc")))
 
 datasets = [xr.open_dataset(f) for f in files]
 
@@ -99,7 +103,7 @@ plt.gca().margins(x=0, y=0)
 plt.ylim(0, 120)
 plt.tight_layout()
 plt.title('bg_emis=0.7 for 23.8GHz')
-plt.savefig(f"{output_path}/losses_bg"+tag_name+'.png', dpi=300, bbox_inches="tight")
+plt.savefig(f"{output_path}/plots/losses_bg"+tag_name+'.png', dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -111,12 +115,6 @@ tbsim=datasets[6]
 
 #tbsim initial - initial simulated brightness temperatures from the model
 tbsim_ini=datasets[7]
-
-#scanpos - scan positions for each observation
-scanpos=xr.open_dataset("/perm/dnk8355/netcdf_1april2024_31march2025/METOP-B_SCANPOS.nc")
-
-#FG_dep for each observation
-fg_dep=xr.open_dataset("/perm/dnk8355/netcdf_1april2024_31march2025/METOP-B_FG_DEP.nc")
 
 
 # Create masks for specific scan positions
@@ -130,8 +128,10 @@ fg_dep_scanpos_14_15_16 = fg_dep.where(mask_scanpos_14_15_16, drop=True)
 fg_dep_scanpos_edge = fg_dep.where(mask_scanpos_edge, drop=True)
 
 #We rename the dimension 'obs' to 'iobs' to match the dimension name in tbobs
-mask_scanpos_14_15_16 = mask_scanpos_14_15_16.rename({'obs': 'iobs'})
-mask_scanpos_edge=mask_scanpos_edge.rename({'obs': 'iobs'})
+mask_scanpos_14_15_16 = mask_scanpos_14_15_16.rename(obs="iobs")
+mask_scanpos_14_15_16 = mask_scanpos_14_15_16.assign_coords(iobs=tbobs.iobs)
+mask_scanpos_edge = mask_scanpos_edge.rename(obs="iobs")
+mask_scanpos_edge = mask_scanpos_edge.assign_coords(iobs=tbobs.iobs)
 
 tbobs_scanpos_14_15_16 = tbobs.where(mask_scanpos_14_15_16, drop=True)
 tbsim_scanpos_14_15_16 = tbsim.where(mask_scanpos_14_15_16, drop=True)
@@ -168,6 +168,44 @@ mean_diff_per_channel_edge = diff_scanpos_edge.mean(dim="iobs")
 std_diff_per_channel_edge = diff_scanpos_edge.std(dim="iobs")
 mse_per_channel_edge = (diff_scanpos_edge ** 2).mean(dim="iobs")
 rmse_per_channel_edge = np.sqrt(mse_per_channel_edge)
+
+
+#Table with statistics
+channels = tbobs.channel_name.values
+
+# Crear la tabla
+results = pd.DataFrame(
+    index=[
+        "Mean FG dep (all)",
+        "Mean FG dep (scanpos 14-16)",
+        "Mean FG dep (edge)",
+        "Mean (all)",
+        "Mean (scanpos 14-16)",
+        "Mean (edge)",
+        "STD (all)",
+        "STD (scanpos 14-16)",
+        "STD (edge)",
+        "RMSE (all)",
+        "RMSE (scanpos 14-16)",
+        "RMSE (edge)"
+    ],
+    columns=channels,
+    data= [ mean_fg_dep_per_channel.values,
+        mean_fg_dep_per_channel_scanpos_14_15_16.values,
+        mean_diff_per_channel_edge.values,
+        mean_fg_dep_per_channel_edge.values,
+        mean_diff_per_channel_scanpos_14_15_16.values,
+        mean_diff_per_channel_edge.values,
+        std_diff_per_channel.values,
+        std_diff_per_channel_scanpos_14_15_16.values,
+        std_diff_per_channel_edge.values,
+        rmse_per_channel.values,
+        rmse_per_channel_scanpos_14_15_16.values,
+        rmse_per_channel_edge.values]
+)
+
+print(results)
+results.to_csv(f"{output_path}/statistics_{tag_name}.csv")
 
 
 def polarCentral_set_latlim(lat_lims, ax):
