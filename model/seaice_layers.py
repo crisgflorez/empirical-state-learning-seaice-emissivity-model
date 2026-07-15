@@ -44,11 +44,12 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
     Sea ice emissivity empirical model - dense multi-layer neural network version
     """
     def __init__(self, channels=10, width=7, nobs=1, npol=2, activation='sigmoid', bg_error=1e-5, background=0.8,
-      use_loss=False, emissivity_mapping=None, loss_channel=0):
+      use_loss=False, emissivity_mapping=None, loss_channel=0, trainable=True):
         super(SeaiceEmisNN, self).__init__()
         self.layers = list()
-        self.layers.append(tf.keras.layers.Dense(width,activation=activation))
-        self.layers.append(tf.keras.layers.Dense(npol,activation=activation))
+        self.trainable = trainable
+        self.layers.append(tf.keras.layers.Dense(width,activation=activation,trainable=trainable))
+        self.layers.append(tf.keras.layers.Dense(npol,activation=activation,trainable=trainable))
         self.frequency_mapping=emissivity_mapping[0]
         self.polarisation_mapping=emissivity_mapping[1] #Removed in the new version but needed in the first one
         self.bg_error = bg_error
@@ -57,8 +58,13 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
         self.nobs = nobs
         self.channels = channels
         self.loss_channel = loss_channel
-    def call(self, tsfc, ice_properties, isensor, pol0, pol1):
-        inputs = tf.concat([tf.reshape(tsfc,(-1,1)),ice_properties],1)
+    def call(self, tsfc, ice_properties, isensor, pol0, pol1, zenith):
+
+        if self.trainable==False:
+            inputs = tf.concat([tf.reshape(tsfc,(-1,1)),ice_properties],1)
+        else:
+            zenith_norm = (zenith-30)/30
+            inputs = tf.concat([tf.reshape(tsfc,(-1,1)),ice_properties,tf.reshape(zenith_norm,(-1,1))],1)
         out = []
 
         ###############################################

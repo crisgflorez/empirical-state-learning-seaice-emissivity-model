@@ -30,7 +30,7 @@ class SeaiceModel:
                  bg_error_seaice=0.002, bg_error_false_sic=0.02, bg_error_emis=1e-5, background_emis=0.8, seaice_use_loss=False,
                  seaice_use_pdf_loss=True, seaice_use_tsfc_loss=True, penalise_false_sic=True, emis_use_bounds_loss=True,
                  loss_channel_emis=0, background_bias=None, bg_error_bias=None,
-                 width_nn=7, grid=None, nfields_float=7, nfields_int=1, nsensors=3, emissivity_mapping=None):
+                 width_nn=7, grid=None, nfields_float=9, nfields_int=1, nsensors=3, emissivity_mapping=None, trainable_emis=True):
         """
         Initialize the network structure and internal and external dimensions
         """
@@ -80,7 +80,7 @@ class SeaiceModel:
         cloud_fraction = self.inputs_float[:,5]
         iobs = self.inputs_int[:,0]
         isensor = tf.cast(self.inputs_float[:,6],tf.int32)
-        #scanpos = self.inputs_float[:,7] #This is not int32 to allow for NaN values in scanpos
+        scanpos = self.inputs_float[:,7] #This is not int32 to allow for NaN values in scanpos
         zenith = self.inputs_float[:,8]
         pol0 = self.inputs_pol0
         pol1 = self.inputs_pol1
@@ -99,7 +99,7 @@ class SeaiceModel:
         self.seaice_emis_layer = seaice_layers.SeaiceEmisNN(nchannels, width=width_nn,
           background=background_emis, emissivity_mapping=emissivity_mapping, nobs=nobs,
           npol=self.setup['npol'], bg_error=bg_error_emis, use_loss=emis_use_bounds_loss,
-          loss_channel = loss_channel_emis)
+          loss_channel = loss_channel_emis,trainable=trainable_emis)
         self.ocean_emis_layer = seaice_layers.OceanEmis(nchannels)
         self.seaice_layer = seaice_layers.SeaiceFraction(nchannels, ngrid, nstep,
           nlag, nobs, alpha=alpha, bg_error=bg_error_seaice, bg_error_false_sic=bg_error_false_sic,
@@ -125,7 +125,7 @@ class SeaiceModel:
         ice_prop_grid = self.ice_prop_layer_grid(geolocation)
         ice_prop_obs  = self.ice_prop_layer_obs(iobs)
         ice_prop = tf.concat([ice_prop_grid,ice_prop_obs],1)
-        self.emis_seaice = self.seaice_emis_layer(tsfc_norm, ice_prop, isensor, pol0, pol1)
+        self.emis_seaice = self.seaice_emis_layer(tsfc_norm, ice_prop, isensor, pol0, pol1, zenith)
         emis_ocean_bc = self.ocean_emis_layer(windspeed, emis_ocean)
         seaice_fraction = self.seaice_layer(geolocation, tsfc)
         surface_emitted, emis_mixed = self.surface_terms_layer(seaice_fraction, emis_ocean_bc, self.emis_seaice, tsfc)
@@ -262,15 +262,13 @@ class SeaiceModel:
         self.ocean_emis_layer.set_weights([models.ocean_emis_bias])
         self.bias_layer.set_weights([models.tb_bias])
 
-    #def load_weights(self, filename_append, outpath):
-    #    """
+    def load_weights(self, filename_append, outpath):
+        """
     #    Initialise the network trainable weights from previously saved states
     #    """
-    #    models = xr.open_dataset(outpath+'models_'+filename_append+'.nc')
-    #    self.seaice_emis_layer.set_weights([models.emis_layer1_weights,
-    #        models.emis_layer1_biases,models.emis_layer2_weights,models.emis_layer2_biases])
-    #    self.ocean_emis_layer.set_weights([models.ocean_emis_bias])
-    #    self.bias_layer.set_weights([models.tb_bias])
+        models = xr.open_dataset(outpath+'models_'+filename_append+'.nc')
+        self.seaice_emis_layer.set_weights([models.emis_layer1_weights,
+            models.emis_layer1_biases,models.emis_layer2_weights,models.emis_layer2_biases])
 
 
     def initialize(self, ifs_seaice_file, ifs_tsfc_file):

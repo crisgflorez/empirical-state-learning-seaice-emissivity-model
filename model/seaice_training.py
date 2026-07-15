@@ -36,17 +36,17 @@ def get_args():
     parser = argparse.ArgumentParser('Sea ice training v2')
     parser.add_argument('--data', help='Directory containing the training data.', type=str, default='/perm/dnk8355/paper2026/netcdf_1april2024_31march2026')
     parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+', default=['METOP-B'])
-    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/paper2026/outputs_training/exp1_METOPB')
-    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='1april2024_31march2026_bg_emis07_with_losses_adjusted_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_002_newimplementation_in_emisNN_no_angle_25epochs_sbatch_python3_12')
+    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/paper2026/outputs_training/exp3_METOPB')
+    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='1april2024_31march2026_bg_emis07_with_losses_adjusted_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_002_newimplementation_in_emisNN_with_polarization_3epochs_sbatch_python3_10')
     parser.add_argument('--modeltag', help='If not training, optionally use an existing model with a different tag name.', type=str, default=None)
     parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
     parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)
     parser.add_argument('--nsteps', help='Number of time steps (usually days) in the model (default all)', type=int, default=-1)
-    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=25)
+    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=3)
     parser.add_argument('--diagsonly', help='Compute output diagnostics from an already-trained model.', action='store_true')
     parser.add_argument('--trainonly', help='Only train the model (needed for large datasets to avoid OOM GPU errors).', action='store_true')
     parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true', default=True)
-    parser.add_argument('--pretrained_model', help='Allow loading pretrained model', action='store_true', default=False)
+    parser.add_argument('--pretrained_model', help='Allow loading pretrained model', action='store_true', default=True)
 
     # Read command line arguments
     # parse_known_args avoids errors from extra Jupyter/VSCode arguments
@@ -123,8 +123,8 @@ with tf_strategy.scope():
       nfields_float=nfields_float, nfields_int=nfields_int, nsensors=nsensors,
       loss_channel_emis = loss_channel_emis[0][0],background_emis=background_emis_value,
       background_bias=sensor_info.background_bias, bg_error_bias=sensor_info.background_bias_error,
-      nlag=1, alpha=[0.6,0.4], emissivity_mapping=(sensor_info.frequency_maps,sensor_info.polarisation_maps))
-    seaice_model.initialize(ice_path+'ifs_seaice_initials_METOP-C_1apr2024_31march2026_without_land_without_nans.nc', ice_path+'ifs_tsfc_METOP-C_1apr2024_31march2026_dailyx_without_land.nc') 
+      nlag=1, alpha=[0.6,0.4], emissivity_mapping=(sensor_info.frequency_maps,sensor_info.polarisation_maps),trainable_emis=not pretrained_model)
+    seaice_model.initialize(ice_path+'ifs_seaice_initials_METOP-B_1apr2024_31march2026_without_land_without_nans.nc', ice_path+'ifs_tsfc_METOP-B_1apr2024_31march2026_dailyx_without_land.nc') 
 
     # Callback to allow updating the sea ice loss functions during training (in practice no effect as default loss is also 0.002)
     class BatchEpochCallback(tf.keras.callbacks.Callback):
@@ -175,8 +175,8 @@ with tf_strategy.scope():
         distributor.makeSplit(1)
         generator = sm.DataGenerator(distributor,0)
         batch_epoch_callback = BatchEpochCallback()  # keep the object alive to store batch losses
-        #if pretrained_model==True:
-        #    seaice_model.load_weights("/home/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/evaluate_model_output/", "v2s")
+        if pretrained_model==True:
+            seaice_model.load_weights("v2s",ice_path)
         history = model.fit(generator, epochs = nepochs, batch_size=batchsize, callbacks=[batch_epoch_callback])
         seaice_model.save(history, filename_append, output_path, callback=batch_epoch_callback)
     else:

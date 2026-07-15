@@ -177,7 +177,7 @@ class SeaiceSensors():
           'background_bias_error': 1.0, #0.001 1.0
           'zswath_width':48.333333,
           'zfov_spacing': 3.333333,
-          'type_sensor':'conical' } #'conical' 'cross-track'
+          'type_sensor':'cross-track' } #'conical' 'cross-track'
         
         # amsu-a onboard METOP-C
         self.all_sensors['METOP-C'] = {

@@ -9,8 +9,8 @@
 #SBATCH --mem-per-cpu=8GB
 #SBATCH --gpus=1
 #SBATCH --job-name=seaice_gpu
-#SBATCH -o sbatchlogs/seaice_gpu_metopC_25epochs.out
-#SBATCH -e sbatchlogs/seaice_gpu_metopC_25epochs.err
+#SBATCH -o sbatchlogs/seaice_gpu_metopB_3epochs.out
+#SBATCH -e sbatchlogs/seaice_gpu_metopB_3epochs.err
 
 module load python3/may23
 
@@ -20,8 +20,9 @@ pyScript=seaice_training.py
 echo "starting ${pyScript} ...."
 python3 ${sourcePath}/${pyScript} \
   --data /perm/dnk8355/paper2026/netcdf_1april2024_31march2026 \
-  --sensors METOP-C \
-  --output /perm/dnk8355/paper2026/outputs_training/exp1_METOPC_obs_err_fromMETOPB \
-  --tag 1april2024_31march2026_bg_emis07_with_losses_adjusted_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_002_newimplementation_in_emisNN_with_angle_25epochs_sbatch_python3_10 \
-  --reproducible
+  --sensors METOP-B \
+  --output /perm/dnk8355/paper2026/outputs_training/exp3_METOPB \
+  --tag 1april2024_31march2026_bg_emis07_with_losses_adjusted_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_002_newimplementation_in_emisNN_with_angle_3epochs_sbatch_python3_10_pretrained_model \
+  --reproducible \
+  --pretrained_model True
 
