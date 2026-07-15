@@ -107,14 +107,21 @@ class SeaiceSensors():
         #}
 
         # Obs errors for AMSU-A channels new values
+        #amsua_obs_errors = {
+        #    '24v': 4.5, 
+        #    '37v': 5.0, 
+        #    '50v': 5.0, 
+        #    '53v': 2.0, 
+        #    '89v': 4.5  
+        #}
+        #Adjusted obs errors
         amsua_obs_errors = {
-            '24v': 4.5, 
-            '37v': 5.0, 
-            '50v': 5.0, 
-            '53v': 2.0, 
-            '89v': 4.5  
+            '24v': 5, 
+            '37v': 5, 
+            '50v': 3.5, 
+            '53v': 2, 
+            '89v': 5.5  
         }
-
         # If any of the specified sensors are in the amsua list, update the obs_error accordingly
         if any(s in self.sensors for s in amsua_sensors):
             for ch_name, new_err in amsua_obs_errors.items():
@@ -180,7 +187,7 @@ class SeaiceSensors():
           'background_bias_error': 1.0,
           'zswath_width':48.333333,
           'zfov_spacing': 3.333333,
-          'type_sensor': 'conical'}
+          'type_sensor': 'cross-track'}
         
         # amsu-a onboard NOAA15
         self.all_sensors['NOAA-15'] = {

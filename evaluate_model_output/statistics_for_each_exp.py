@@ -23,19 +23,20 @@ import matplotlib.cm as cm
 from matplotlib.colors import TwoSlopeNorm
 import matplotlib.gridspec as gridspec
 
-folder = "/home/dnk8355/perm/paper2026/outputs_training/exp1_METOPB"
-#folder = "/home/dnk8355/perm/paper2026/outputs_training/exp1_METOPC_obs_err_fromMETOPB"
+#folder = "/home/dnk8355/perm/paper2026/outputs_training/exp1_METOPB"
+folder = "/home/dnk8355/perm/paper2026/outputs_training/exp1_METOPC_obs_err_fromMETOPB"
 
-tag_name='8epochs'
+#tag_name='METOPB_8epochs'
+tag_name='METOPC_8epochs'
 
 
 #scanpos - scan positions for each observation
-scanpos=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-B_SCANPOS.nc")
-#scanpos=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-C_SCANPOS.nc")
+#scanpos=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-B_SCANPOS.nc")
+scanpos=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-C_SCANPOS.nc")
 
 #FG_dep for each observation
-fg_dep=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-B_FG_DEP.nc")
-#fg_dep=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-C_FG_DEP.nc")
+#fg_dep=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-B_FG_DEP.nc")
+fg_dep=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-C_FG_DEP.nc")
 
 # Collect all .nc files in the folder
 files = sorted(glob.glob(os.path.join(folder, "*_8epochs*.nc")))
@@ -109,6 +110,8 @@ rmse_per_channel_edge = np.sqrt(mse_per_channel_edge)
 #Table with statistics
 channels = tbobs.channel_name.values
 
+print('Finished calculations')
+print(folder)
 # Crear la tabla
 results = pd.DataFrame(
     index=[

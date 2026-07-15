@@ -42,10 +42,11 @@ def get_args():
     parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
     parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)
     parser.add_argument('--nsteps', help='Number of time steps (usually days) in the model (default all)', type=int, default=-1)
-    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=8)
+    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=25)
     parser.add_argument('--diagsonly', help='Compute output diagnostics from an already-trained model.', action='store_true')
     parser.add_argument('--trainonly', help='Only train the model (needed for large datasets to avoid OOM GPU errors).', action='store_true')
     parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true', default=True)
+    parser.add_argument('--pretrained_model', help='Allow loading pretrained model', action='store_true', default=False)
 
     # Read command line arguments
     # parse_known_args avoids errors from extra Jupyter/VSCode arguments
@@ -64,6 +65,7 @@ ice_path=args.data+'/'
 output_path=args.output+'/'
 Path(output_path).mkdir(parents=True, exist_ok=True)
 
+pretrained_model=args.pretrained_model
 batchsize = args.batchsize
 filename_append = args.tag
 if args.modeltag is None:
@@ -173,6 +175,8 @@ with tf_strategy.scope():
         distributor.makeSplit(1)
         generator = sm.DataGenerator(distributor,0)
         batch_epoch_callback = BatchEpochCallback()  # keep the object alive to store batch losses
+        #if pretrained_model==True:
+        #    seaice_model.load_weights("/home/dnk8355/EUMETSAT_fellowship/empirical-state-learning-seaice-emissivity-model/evaluate_model_output/", "v2s")
         history = model.fit(generator, epochs = nepochs, batch_size=batchsize, callbacks=[batch_epoch_callback])
         seaice_model.save(history, filename_append, output_path, callback=batch_epoch_callback)
     else:

@@ -262,6 +262,17 @@ class SeaiceModel:
         self.ocean_emis_layer.set_weights([models.ocean_emis_bias])
         self.bias_layer.set_weights([models.tb_bias])
 
+    #def load_weights(self, filename_append, outpath):
+    #    """
+    #    Initialise the network trainable weights from previously saved states
+    #    """
+    #    models = xr.open_dataset(outpath+'models_'+filename_append+'.nc')
+    #    self.seaice_emis_layer.set_weights([models.emis_layer1_weights,
+    #        models.emis_layer1_biases,models.emis_layer2_weights,models.emis_layer2_biases])
+    #    self.ocean_emis_layer.set_weights([models.ocean_emis_bias])
+    #    self.bias_layer.set_weights([models.tb_bias])
+
+
     def initialize(self, ifs_seaice_file, ifs_tsfc_file):
         seaice_weights_list = [seaice_layers.seaice_initializer(self.seaice_layer.seaice.shape, ifs_seaice_file)]
         if self.seaice_layer.use_tsfc_loss:

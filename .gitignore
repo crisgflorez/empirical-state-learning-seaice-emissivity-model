@@ -1,3 +1,5 @@
 plots/
 sbatchlogs/
 model/sbatchlogs
+evaluate_model_output/models_v2s.nc
+model/ecsbatch.log.38843351
