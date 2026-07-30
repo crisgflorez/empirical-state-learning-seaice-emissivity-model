@@ -79,8 +79,11 @@ used_indices = np.unique(np.concatenate([unique_METOPB, unique_METOPC])).astype(
 # === Create mapping from old igrid -> new igrid ===
 mapping = {old: new for new, old in enumerate(used_indices)}
 
-# === Apply mapping to remap all observation indices ===
-new_indices = np.array([mapping[idx] for idx in old_indices])
+# === Apply mapping to remap all observation indices in METOP-B ===
+new_indices_METOPB = np.array([mapping[idx] for idx in used_indices_METOPB])
+# === Apply mapping to remap all observation indices in METOP-C ===
+new_indices_METOPC = np.array([mapping[idx] for idx in used_indices_METOPC])
+
 
 # === Create reduced grid dataset ===
 
@@ -91,14 +94,21 @@ reduced_grid_ds = xr.Dataset(
     },
     coords={"igrid": np.arange(len(lats_ref[used_indices]))}
 )
-# === Create new IGRID dataset ===
+
+# === Create new IGRID dataset both for METOPB and METOPC 
+# for training together===
 # This IGRID do not consider land points
-IGRID = xr.Dataset(
-    {"COMMON_IGRID": (("OBS",), new_indices)}
+IGRID_common_METOPB = xr.Dataset(
+    {"COMMON_IGRID": (("OBS",), new_indices_METOPB)}
+)
+IGRID_common_METOPC = xr.Dataset(
+    {"COMMON_IGRID": (("OBS",), new_indices_METOPC)}
 )
 
-# === Save everything to NetCDF ===
 
+# === Save everything to NetCDF ===
 reduced_grid_ds.to_netcdf('/home/dnk8355/perm/paper2026/grib_files_NH_SH/'+ str(i)+'_1april2024_31march2026_lat_lon_corrected_ref_above44_without_land.nc')
-IGRID.to_netcdf('/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/'+'COMMON_IGRID_METOPB&C.nc')
+IGRID_common_METOPB.to_netcdf('/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/'+'METOP-B_COMMON_IGRID.nc')
+IGRID_common_METOPC.to_netcdf('/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/'+'METOP-C_COMMON_IGRID.nc')
+
 
