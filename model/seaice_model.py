@@ -30,7 +30,7 @@ class SeaiceModel:
                  bg_error_seaice=0.002, bg_error_false_sic=0.02, bg_error_emis=1e-5, background_emis=0.8, seaice_use_loss=False,
                  seaice_use_pdf_loss=True, seaice_use_tsfc_loss=True, penalise_false_sic=True, emis_use_bounds_loss=True,
                  loss_channel_emis=0, background_bias=None, bg_error_bias=None,
-                 width_nn=7, grid=None, nfields_float=9, nfields_int=1, nsensors=3, emissivity_mapping=None, trainable_emis=True):
+                 width_nn=7, grid=None, nfields_float=9, nfields_int=1, nsensors=3, emissivity_mapping=None, trainable_emis=True,zenith_as_predictor=False):
         """
         Initialize the network structure and internal and external dimensions
         """
@@ -99,7 +99,7 @@ class SeaiceModel:
         self.seaice_emis_layer = seaice_layers.SeaiceEmisNN(nchannels, width=width_nn,
           background=background_emis, emissivity_mapping=emissivity_mapping, nobs=nobs,
           npol=self.setup['npol'], bg_error=bg_error_emis, use_loss=emis_use_bounds_loss,
-          loss_channel = loss_channel_emis,trainable=trainable_emis)
+          loss_channel = loss_channel_emis,trainable=trainable_emis,zenith_as_predictor=zenith_as_predictor)
         self.ocean_emis_layer = seaice_layers.OceanEmis(nchannels)
         self.seaice_layer = seaice_layers.SeaiceFraction(nchannels, ngrid, nstep,
           nlag, nobs, alpha=alpha, bg_error=bg_error_seaice, bg_error_false_sic=bg_error_false_sic,

@@ -44,10 +44,11 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
     Sea ice emissivity empirical model - dense multi-layer neural network version
     """
     def __init__(self, channels=10, width=7, nobs=1, npol=2, activation='sigmoid', bg_error=1e-5, background=0.8,
-      use_loss=False, emissivity_mapping=None, loss_channel=0, trainable=True):
+      use_loss=False, emissivity_mapping=None, loss_channel=0, trainable=True,zenith_as_predictor=False):
         super(SeaiceEmisNN, self).__init__()
         self.layers = list()
         self.trainable = trainable
+        self.zenith_as_predictor = zenith_as_predictor
         self.layers.append(tf.keras.layers.Dense(width,activation=activation,trainable=trainable))
         self.layers.append(tf.keras.layers.Dense(npol,activation=activation,trainable=trainable))
         self.frequency_mapping=emissivity_mapping[0]
@@ -59,12 +60,11 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
         self.channels = channels
         self.loss_channel = loss_channel
     def call(self, tsfc, ice_properties, isensor, pol0, pol1, zenith):
-
-        if self.trainable==False:
-            inputs = tf.concat([tf.reshape(tsfc,(-1,1)),ice_properties],1)
-        else:
+        inputs = tf.concat([tf.reshape(tsfc,(-1,1)),ice_properties],1)
+        if self.trainable and self.zenith_as_predictor:
             zenith_norm = (zenith-30)/30
             inputs = tf.concat([tf.reshape(tsfc,(-1,1)),ice_properties,tf.reshape(zenith_norm,(-1,1))],1)
+            #inputs = tf.concat([inputs, tf.reshape(zenith_norm, (-1,1))],axis=1)
         out = []
 
         ###############################################
@@ -118,8 +118,20 @@ class SeaiceEmisNN(tf.keras.layers.Layer):
             #### one_channel = (1-pol[:,0])*pol_pair_corr_v + pol[:,0]*pol_pair_corr_h
             pol0_i = pol0[:, i]
             pol1_i = pol1[:, i]
-            one_channel = pol0_i*pol_pair[:,0]+pol1_i*pol_pair[:,1] 
-            out.append(one_channel)
+            if self.trainable==False:
+                zenith_sin = tf.sin(zenith * np.pi / 180.0)
+                zenith_sin53 = tf.sin(53.0 * np.pi / 180.0)
+                correction=(zenith_sin/zenith_sin53)**2
+                delta_53=pol_pair[:,0]-pol_pair[:,1]
+                mean_53=(pol_pair[:,0]+pol_pair[:,1])/2
+                pol0_corrected= mean_53 +(1/2)*delta_53*correction
+                pol1_corrected= mean_53 -(1/2)*delta_53*correction  
+                            
+                one_channel = pol0_i*pol0_corrected+pol1_i*pol1_corrected 
+                out.append(one_channel)
+            else:
+                one_channel = pol0_i*pol_pair[:,0]+pol1_i*pol_pair[:,1] 
+                out.append(one_channel)
         ####################################################################
 
         out = tf.stack(out,1)

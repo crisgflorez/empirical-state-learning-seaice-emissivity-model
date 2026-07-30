@@ -27,16 +27,15 @@ import matplotlib.gridspec as gridspec
 # ifs_sic = xr.open_dataset("/perm/dnk8355/netcdf_1april2024_31march2025/ifs_seaice_initials_METOP-B_1apr2024_31march2025_without_land_without_nans.nc")
 # ifs_tsfc = xr.open_dataset("/perm/dnk8355/netcdf_1april2024_31march2025/ifs_tsfc_METOP-B_1apr2024_31march2025_dailyx_without_land.nc")
 
-folder = "/home/dnk8355/perm/paper2026/outputs_training/exp3_METOPB"
-output_path = "/home/dnk8355/perm/paper2026/outputs_training/exp3_METOPB"
-tag_name='3epochs'
+output_path = "/home/dnk8355/perm/paper2026/outputs_training/expA_METOPB_def"
+tag_name='1epochs'
 #scanpos - scan positions for each observation
 scanpos=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-B_SCANPOS.nc")
 #FG_dep for each observation
 fg_dep=xr.open_dataset("/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/METOP-B_FG_DEP.nc")
 
 # Collect all .nc files in the folder
-files = sorted(glob.glob(os.path.join(folder, "*_3epochs*.nc")))
+files = sorted(glob.glob(os.path.join(output_path, "*_1epochs*.nc")))
 
 datasets = [xr.open_dataset(f) for f in files]
 
@@ -218,79 +217,6 @@ results.to_csv(f"{output_path}/statistics_{tag_name}.csv")
 #    center, radius = [0.5, 0.5], 0.5
 #    verts = np.vstack([np.sin(theta), np.cos(theta)]).T
 #    circle = mpath.Path(verts * radius + center)
-
-
-#New for fi 3 days to check channels in METOPC
-def polar_set_latlim(lat_lims, ax):
-    ax.set_extent([-180, 180, lat_lims[0], lat_lims[1]],
-                  crs=ccrs.PlateCarree())
-
-    theta = np.linspace(0, 2*np.pi, 100)
-    center, radius = [0.5, 0.5], 0.5
-    verts = np.vstack([np.sin(theta), np.cos(theta)]).T
-    circle = mpath.Path(verts * radius + center)
-    ax.set_boundary(circle, transform=ax.transAxes)
-
-def sp_map(*nrs, projection = ccrs.NorthPolarStereo(), **kwargs):
-    return plt.subplots(*nrs, subplot_kw={'projection':projection}, **kwargs)
-
-
-target_date = np.datetime64("2026-03-31")   # Cambia la fecha
-channel = 3                              # Canal que quieras
-
-# Filtrar ese día
-mask = tbobs.date_time_fromjd.dt.floor("D") == target_date
-
-diff_day = diff_all.where(mask, drop=True)
-tbobs_day = tbobs.where(mask, drop=True)
-
-# Seleccionar canal
-diff_ch = diff_day.isel(channel=channel)
-
-fig, axes = plt.subplots(
-    1, 2,
-    figsize=(14,7),
-    subplot_kw={"projection": ccrs.NorthPolarStereo()}
-)
-
-# Cambiar la proyección del segundo eje
-axes[1].remove()
-axes[1] = fig.add_subplot(1,2,2, projection=ccrs.SouthPolarStereo())
-
-# Norte
-polar_set_latlim([50,90], axes[0])
-
-# Sur
-polar_set_latlim([-90,-50], axes[1])
-
-for ax in axes:
-    ax.scatter(
-        tbobs_day.lon,
-        tbobs_day.lat,
-        c=diff_ch,
-        s=15,
-        cmap="RdBu_r",
-        transform=ccrs.PlateCarree()
-    )
-    ax.add_feature(cfeature.COASTLINE)
-    ax.add_feature(cfeature.LAND, facecolor="lightgray")
-    ax.gridlines()
-
-axes[0].set_title("Northern Hemisphere")
-axes[1].set_title("Southern Hemisphere")
-plt.title(
-    f"TBobs - TBsim\nChannel {channel} - {str(target_date)}",
-    fontsize=18
-)
-
-
-
-
-
-
-
-
-
 
 
 #Day of interest

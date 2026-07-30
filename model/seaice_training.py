@@ -36,17 +36,20 @@ def get_args():
     parser = argparse.ArgumentParser('Sea ice training v2')
     parser.add_argument('--data', help='Directory containing the training data.', type=str, default='/perm/dnk8355/paper2026/netcdf_1april2024_31march2026')
     parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+', default=['METOP-B'])
-    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/paper2026/outputs_training/exp3_METOPB')
-    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='1april2024_31march2026_bg_emis07_with_losses_adjusted_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_002_newimplementation_in_emisNN_with_polarization_3epochs_sbatch_python3_10')
+    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/paper2026/outputs_training/expA_METOPB_def')
+    parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='1april2024_31march2026_bg_emis07_with_losses_adjusted_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_002_newimplementation_in_emisNN_with_polarization_1epochs_python3_10')
     parser.add_argument('--modeltag', help='If not training, optionally use an existing model with a different tag name.', type=str, default=None)
     parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
     parser.add_argument('--stepstart', help='Step in training data from which to start (default 0)', type=int, default=0)
     parser.add_argument('--nsteps', help='Number of time steps (usually days) in the model (default all)', type=int, default=-1)
-    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=3)
+    parser.add_argument('--nepochs', help='Number of training epochs (default 25)', type=int, default=1)
     parser.add_argument('--diagsonly', help='Compute output diagnostics from an already-trained model.', action='store_true')
     parser.add_argument('--trainonly', help='Only train the model (needed for large datasets to avoid OOM GPU errors).', action='store_true')
     parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true', default=True)
-    parser.add_argument('--pretrained_model', help='Allow loading pretrained model', action='store_true', default=True)
+    parser.add_argument('--pretrained_model', help='Allow loading pretrained model', action='store_true', default=False)
+    parser.add_argument('--zenith_as_predictor', help='Zenith as an extra predictor in the neural network', action='store_true', default=False)
+    parser.add_argument('--initial_seaice',help='Initial sea ice fraction file.',type=str,default='ifs_seaice_initials_METOP-B_1apr2024_31march2026_without_land_without_nans.nc')
+    parser.add_argument('--initial_tsfc',help='Initial surface temperature file.',type=str,default='ifs_tsfc_METOP-B_1apr2024_31march2026_dailyx_without_land.nc')
 
     # Read command line arguments
     # parse_known_args avoids errors from extra Jupyter/VSCode arguments
@@ -59,6 +62,13 @@ def get_args():
 
  
 args = get_args()
+initial_seaice = args.initial_seaice
+initial_tsfc = args.initial_tsfc
+
+print("========== RUN CONFIGURATION ==========")
+for key, value in vars(args).items():
+    print(f"{key}: {value}")
+print("======================================")
 
 # This is the top level directory location for all input and output data
 ice_path=args.data+'/'
@@ -66,6 +76,7 @@ output_path=args.output+'/'
 Path(output_path).mkdir(parents=True, exist_ok=True)
 
 pretrained_model=args.pretrained_model
+zenith_as_predictor=args.zenith_as_predictor
 batchsize = args.batchsize
 filename_append = args.tag
 if args.modeltag is None:
@@ -123,8 +134,8 @@ with tf_strategy.scope():
       nfields_float=nfields_float, nfields_int=nfields_int, nsensors=nsensors,
       loss_channel_emis = loss_channel_emis[0][0],background_emis=background_emis_value,
       background_bias=sensor_info.background_bias, bg_error_bias=sensor_info.background_bias_error,
-      nlag=1, alpha=[0.6,0.4], emissivity_mapping=(sensor_info.frequency_maps,sensor_info.polarisation_maps),trainable_emis=not pretrained_model)
-    seaice_model.initialize(ice_path+'ifs_seaice_initials_METOP-B_1apr2024_31march2026_without_land_without_nans.nc', ice_path+'ifs_tsfc_METOP-B_1apr2024_31march2026_dailyx_without_land.nc') 
+      nlag=1, alpha=[0.6,0.4], emissivity_mapping=(sensor_info.frequency_maps,sensor_info.polarisation_maps),trainable_emis=not pretrained_model,zenith_as_predictor=zenith_as_predictor)
+    seaice_model.initialize(ice_path+initial_seaice, ice_path+initial_tsfc)
 
     # Callback to allow updating the sea ice loss functions during training (in practice no effect as default loss is also 0.002)
     class BatchEpochCallback(tf.keras.callbacks.Callback):
