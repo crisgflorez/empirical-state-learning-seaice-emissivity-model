@@ -390,7 +390,10 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
         ngrid_all.append(ngrid)
                        
         obsvalue = xr.open_dataset(filebase+fields_chan[0]+'.nc')
-        nchan = obsvalue.OBSVALUE.shape[1]
+        if sensor=='METOP-C': #We need to remove channel 52.8GHz because it has a lot of noise
+            nchan = obsvalue.OBSVALUE.shape[1]-1
+        else:
+            nchan = obsvalue.OBSVALUE.shape[1]
         obsvalue.close()
         
         nchan_all.append(nchan)
@@ -400,7 +403,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
         channel_basis=np.arange(nchan_all[0])
         channel_maps=[channel_basis]
 
-    ngrid = np.max(ngrid_all)
+    #ngrid = np.max(ngrid_all)
     nstep = np.max(nstep_all)
     nobs_total = sum(nobs_all)
     nchannels=len(channel_basis)
@@ -444,7 +447,7 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
 
 
         x0[noff:noff+nobs,0] = np.maximum(273.0 - obs["TSFC"].TSFC[ibegin:ilast],0.0)/30.0
-        x0[noff:noff+nobs,1] = obs[IGRID].IGRID[ibegin:ilast]
+        x0[noff:noff+nobs,1] = obs[IGRID][IGRID][ibegin:ilast]
         x0[noff:noff+nobs,2] = istep[ibegin:ilast]
         x0[noff:noff+nobs,3] = obs["TSFC"].TSFC[ibegin:ilast]
         x0[noff:noff+nobs,4] = obs["WINDSPEED10M"].WINDSPEED10M[ibegin:ilast]
@@ -467,11 +470,11 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
             print(f"Warning: ZENITH file missing for {sensor}, filled with nans.")
 
         isensor += 1
-        lon=xr.open_dataset(filebase+'NEAREST_LONS.nc').NEAREST_LONS.values
-        lat=xr.open_dataset(filebase+'NEAREST_LATS.nc').NEAREST_LATS.values
+        lon_dataset=xr.open_dataset(filebase+'NEAREST_LONS.nc').NEAREST_LONS.values
+        lat_dataset=xr.open_dataset(filebase+'NEAREST_LATS.nc').NEAREST_LATS.values
 
-        lon[noff:noff+nobs] = lon[ibegin:ilast]
-        lat[noff:noff+nobs] = lat[ibegin:ilast]
+        lon[noff:noff+nobs] = lon_dataset[ibegin:ilast]
+        lat[noff:noff+nobs] = lat_dataset[ibegin:ilast]
         julian_day[noff:noff+nobs] = obs["JULIAN_DAY"].JULIAN_DAY[ibegin:ilast]
         
         for dataset in obs.values():
@@ -481,13 +484,13 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
         doff = nfields_float
         for field in fields_chan[1:]:
             obs = xr.open_dataset(filebase+field+'.nc')
-            x0[noff:noff+nobs,doff+channel_map] = (obs.data_vars[field])[ibegin:ilast,:]
+            x0[noff:noff+nobs,doff+channel_map] = (obs.data_vars[field])[ibegin:ilast,channel_map]
             obs.close()
             doff += nchannels
         
         # Obsvalue (where channel present)
         obs = xr.open_dataset(filebase+fields_chan[0]+'.nc')
-        y0[noff:noff+nobs,channel_map,0] = obs.OBSVALUE[ibegin:ilast,:]
+        y0[noff:noff+nobs,channel_map,0] = obs.OBSVALUE[ibegin:ilast,channel_map]
         obs.close()
 
         # Channel mask
@@ -495,8 +498,13 @@ def training_data(icedir, outdir, fappend, sensors, channel_names, nsteps_per_da
               
         noff += nobs
 
-    fixed_grid=xr.open_dataset('/home/dnk8355/perm/paper2026/grib_files_NH_SH/'+sensor+'_1april2024_31march2026_lat_lon_corrected_ref_above44_without_land.nc')
-    fixed_grid.close()
+    if len(sensors)>1:
+        fixed_grid=xr.open_dataset('/home/dnk8355/perm/paper2026/grib_files_NH_SH/'+'METOP-B_METOP-C_1april2024_31march2026_lat_lon_corrected_ref_above44_without_land.nc')
+        fixed_grid.close()
+    else:
+        fixed_grid=xr.open_dataset('/home/dnk8355/perm/paper2026/grib_files_NH_SH/'+sensor+'_1april2024_31march2026_lat_lon_corrected_ref_above44_without_land.nc')
+        fixed_grid.close()
+    ngrid=len(fixed_grid.lat)
     geolocation = {'lon':lon, 'lat':lat, 'julian_day':julian_day, 'mask':y0[:,:,1]}
     grid = {'lon':fixed_grid.lon.values, 'lat':fixed_grid.lat.values, 'julian_day':min(tstart_all)+(np.arange(nstep)/nsteps_per_day), 'stepsize':1.0/nsteps_per_day}
 

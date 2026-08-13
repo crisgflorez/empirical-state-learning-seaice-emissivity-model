@@ -35,8 +35,8 @@ def predict_loop(model, distributor, nsplit, batchsize):
 def get_args():
     parser = argparse.ArgumentParser('Sea ice training v2')
     parser.add_argument('--data', help='Directory containing the training data.', type=str, default='/perm/dnk8355/paper2026/netcdf_1april2024_31march2026')
-    parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+', default=['METOP-B'])
-    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/paper2026/outputs_training/expA_METOPB_def')
+    parser.add_argument('--sensors', help='Sensor names for training.', type=str, nargs='+', default=['METOP-B','METOP-C'])
+    parser.add_argument('--output', help='Directory to store the output data.', type=str, default='/perm/dnk8355/paper2026/outputs_training/exp1_METOPBandC')
     parser.add_argument('--tag', help='Add a tag name to distinguish output files.', type=str, default='1april2024_31march2026_bg_emis07_with_losses_adjusted_obs_errors_bg_biasice0_ocean0_bg_bias_err1_7neurons_update_false_sic0_002_newimplementation_in_emisNN_with_polarization_1epochs_python3_10')
     parser.add_argument('--modeltag', help='If not training, optionally use an existing model with a different tag name.', type=str, default=None)
     parser.add_argument('--batchsize', help='Training batch size.', type=int, default=1024)
@@ -48,8 +48,8 @@ def get_args():
     parser.add_argument('--reproducible', help='Reproducible training; 3-5x slower.', action='store_true', default=True)
     parser.add_argument('--pretrained_model', help='Allow loading pretrained model', action='store_true', default=False)
     parser.add_argument('--zenith_as_predictor', help='Zenith as an extra predictor in the neural network', action='store_true', default=False)
-    parser.add_argument('--initial_seaice',help='Initial sea ice fraction file.',type=str,default='ifs_seaice_initials_METOP-B_1apr2024_31march2026_without_land_without_nans.nc')
-    parser.add_argument('--initial_tsfc',help='Initial surface temperature file.',type=str,default='ifs_tsfc_METOP-B_1apr2024_31march2026_dailyx_without_land.nc')
+    parser.add_argument('--initial_seaice',help='Initial sea ice fraction file.',type=str,default='ifs_seaice_initials_METOP-B_&_METOP-C_1apr2024_31march2026_without_land_without_nans.nc')
+    parser.add_argument('--initial_tsfc',help='Initial surface temperature file.',type=str,default='ifs_tsfc_METOP-B_&_METOP-C_1apr2024_31march2026_dailyx_without_land.nc')
 
     # Read command line arguments
     # parse_known_args avoids errors from extra Jupyter/VSCode arguments

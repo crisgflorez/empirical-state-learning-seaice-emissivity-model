@@ -181,8 +181,8 @@ class SeaiceSensors():
         
         # amsu-a onboard METOP-C
         self.all_sensors['METOP-C'] = {
-          'channel': ['24v','37v','50v','53v','89v'],
-          'frequency': [23.8, 31.4, 50.3, 52.8, 89],
+          'channel': ['24v','37v','50v','89v'],
+          'frequency': [23.8, 31.4, 50.3, 89],
           'background_bias': [0,0],
           'background_bias_error': 1.0,
           'zswath_width':48.333333,

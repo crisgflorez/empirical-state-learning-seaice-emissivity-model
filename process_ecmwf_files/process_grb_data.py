@@ -21,6 +21,7 @@ from datetime import datetime
 
 # === PARAMETERS ===
 filtering_land=True #If True we remove points that are not used by the satellite else False
+instrument_for_training="METOP-B" #It can be "METOP-B, "METOP-C", "both"
 base_path = "/perm/dnk8355/paper2026/grib_files_NH_SH/"
 start_date = datetime(2024, 4, 1)
 end_date = datetime(2026, 3, 31)
@@ -41,7 +42,7 @@ used_indices_METOPB = INITIAL_IGRID_METOPB.INITIAL_IGRID.values
 unique_METOPB = np.unique(used_indices_METOPB).astype(int)
 used_indices_METOPC = INITIAL_IGRID_METOPC.INITIAL_IGRID.values
 unique_METOPC = np.unique(used_indices_METOPC).astype(int)
-unique_old_indices = np.unique(np.concatenate([unique_METOPB, unique_METOPC])).astype(int)
+unique_indices_METOPBandC = np.unique(np.concatenate([unique_METOPB, unique_METOPC])).astype(int)
 
 date_list=[]
 # === LOOP OVER EACH DAY ===
@@ -89,7 +90,12 @@ if filtering_land==True:
     # Instead of filtering land with the lsm included in the grib file 
     # we filter the land with the filtering in the odb
     # Filter SKT to only include points from the fixed grid where there are satellite observations
-    skt_filtered = skt_concat.isel(values=unique_old_indices)
+    if instrument_for_training=="METOP-B":
+        skt_filtered = skt_concat.isel(values=unique_METOPB)
+    elif instrument_for_training=="METOP-C":
+        skt_filtered = skt_concat.isel(values=unique_METOPC)
+    elif instrument_for_training=="both":
+        skt_filtered = skt_concat.isel(values=unique_indices_METOPBandC)
 else:
     skt_filtered = skt_concat
 
@@ -111,8 +117,16 @@ ds_skt = xr.Dataset(
         "DATE": date,
     }
 )
+
+if instrument_for_training=="METOP-B":
+    ds_skt.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_tsfc_METOP-B_1apr2024_31march2026_dailyx_without_land.nc")
+elif instrument_for_training=="METOP-C":
+    ds_skt.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_tsfc_METOP-C_1apr2024_31march2026_dailyx_without_land.nc")
+elif instrument_for_training=="both":
+    ds_skt.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_tsfc_METOP-B_&_METOP-C_1apr2024_31march2026_dailyx_without_land.nc")
+    
 #ds_skt.to_netcdf("/perm/dnk8355/netcdf_monthly_feb2025/ifs_tsfc_feb25_dailyx_without_land.nc")
-ds_skt.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_tsfc_METOP-B_&_METOP-C_1apr2024_31march2026_dailyx_without_land.nc")
+#ds_skt.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_tsfc_METOP-B_&_METOP-C_1apr2024_31march2026_dailyx_without_land.nc")
 
 # --- Process SICONC: monthly mean, broadcasted to all days ---
 day_counter = 0
@@ -157,7 +171,12 @@ siconc_with_lag = siconc_with_lag.assign_coords(
 
 if filtering_land==True:
     # Filter sic to only include points from the fixed grid where there are satellite observations
-    siconc_with_lag_filtered = siconc_with_lag.isel(values=unique_old_indices)
+    if instrument_for_training=="METOP-B":
+        siconc_with_lag_filtered = siconc_with_lag.isel(values=unique_METOPB)
+    elif instrument_for_training=="METOP-C":
+        siconc_with_lag_filtered = siconc_with_lag.isel(values=unique_METOPC)
+    elif instrument_for_training=="both":
+        siconc_with_lag_filtered = siconc_with_lag.isel(values=unique_indices_METOPBandC)
 else: 
     siconc_with_lag_filtered = siconc_with_lag
 
@@ -185,9 +204,14 @@ ds_siconc = xr.Dataset(
     }
 )
 
-
+if instrument_for_training=="METOP-B":
+    ds_siconc.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_seaice_initials_METOP-B_1apr2024_31march2025_without_land_without_nans.nc")
+elif instrument_for_training=="METOP-C":
+    ds_siconc.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_seaice_initials_METOP-C_1apr2024_31march2025_without_land_without_nans.nc")
+elif instrument_for_training=="both":
+    ds_siconc.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_seaice_initials_METOP-B_&_METOP-C_1apr2024_31march2025_without_land_without_nans.nc")
 #ds_siconc.to_netcdf("/perm/dnk8355/netcdf_monthly_feb2025/ifs_seaice_initials_METOP-B_feb2025_without_land_without_nans.nc")
-ds_siconc.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_seaice_initials_METOP-B_&_METOP-C_1apr2024_31march2025_without_land_without_nans.nc")
+#ds_siconc.to_netcdf("/perm/dnk8355/paper2026/netcdf_1april2024_31march2026/ifs_seaice_initials_METOP-B_&_METOP-C_1apr2024_31march2025_without_land_without_nans.nc")
 
 
 #plt.scatter(ds_skt.LON,ds_skt.LAT,c=ds_skt.TSFC[:,0])

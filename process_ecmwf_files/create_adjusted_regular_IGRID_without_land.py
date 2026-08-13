@@ -107,7 +107,7 @@ IGRID_common_METOPC = xr.Dataset(
 
 
 # === Save everything to NetCDF ===
-reduced_grid_ds.to_netcdf('/home/dnk8355/perm/paper2026/grib_files_NH_SH/'+ str(i)+'_1april2024_31march2026_lat_lon_corrected_ref_above44_without_land.nc')
+reduced_grid_ds.to_netcdf('/home/dnk8355/perm/paper2026/grib_files_NH_SH/'+ 'METOP-B_METOP-C_1april2024_31march2026_lat_lon_corrected_ref_above44_without_land.nc')
 IGRID_common_METOPB.to_netcdf('/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/'+'METOP-B_COMMON_IGRID.nc')
 IGRID_common_METOPC.to_netcdf('/home/dnk8355/perm/paper2026/netcdf_1april2024_31march2026/'+'METOP-C_COMMON_IGRID.nc')
 
